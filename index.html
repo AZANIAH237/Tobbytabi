@@ -54,6 +54,17 @@ button{font-family:inherit;}
 .screen.active{display:block;}
 
 /* ===================== SPLASH ===================== */
+/* ===================== TOAST ===================== */
+.toast{
+  position:fixed; left:50%; bottom:28px; transform:translateX(-50%) translateY(24px);
+  background:var(--navy-deep); color:var(--white); padding:13px 18px; border-radius:14px;
+  display:flex; align-items:center; gap:10px; font-size:13px; font-weight:600; max-width:88vw;
+  box-shadow:0 10px 30px rgba(8,21,48,0.35); border:1px solid rgba(212,165,55,0.35);
+  opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease; z-index:500;
+}
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+.toast i{ color:var(--gold); font-size:16px; flex:0 0 auto; }
+
 #splashScreen{
   position:fixed; inset:0; z-index:300;
   background:radial-gradient(120% 120% at 50% 0%, var(--navy-mid) 0%, var(--navy) 45%, var(--navy-deep) 100%);
@@ -932,6 +943,8 @@ footer.app-footer strong{color:var(--navy-deep);}
   </div>
 </div>
 
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span id="toastMsg"></span></div>
+
 <script>
 (function(){
   const LOGO_URL = 'logo.png';
@@ -1174,6 +1187,18 @@ footer.app-footer strong{color:var(--navy-deep);}
     setTimeout(maybeShowNotifPermModal, 1500);
   });
 
+  /* ---------- toast ---------- */
+  const toastEl = document.getElementById('toast');
+  const toastMsgEl = document.getElementById('toastMsg');
+  let toastTimer = null;
+  function showToast(message, iconClass){
+    toastMsgEl.textContent = message;
+    toastEl.querySelector('i').className = iconClass || 'fa-solid fa-circle-check';
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3800);
+  }
+
   /* ---------- install modal (PWA) ---------- */
   let deferredPrompt = null;
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -1182,6 +1207,8 @@ footer.app-footer strong{color:var(--navy-deep);}
   });
   window.addEventListener('appinstalled', () => {
     localStorage.setItem(INSTALL_DISMISS_KEY, 'installed');
+    closeInstallModal();
+    showToast('Installed! Find Goddy Tabi on your home screen.', 'fa-solid fa-circle-check');
   });
 
   function isIos(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
