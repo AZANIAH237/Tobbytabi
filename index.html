@@ -202,7 +202,6 @@ button{font-family:inherit;}
   padding:14px;border-radius:12px;font-weight:800;font-size:14.5px;cursor:pointer;margin-bottom:10px;
   display:flex;align-items:center;justify-content:center;gap:8px;
 }
-.install-link-sub{font-size:10.5px;font-weight:600;opacity:0.75;word-break:break-all;}
 .install-btn-secondary{
   width:100%;background:transparent;color:var(--text-soft);border:none;
   padding:8px;font-weight:600;font-size:13px;cursor:pointer;
@@ -894,9 +893,8 @@ footer.app-footer strong{color:var(--navy-deep);}
     <div class="install-steps" id="installSteps"></div>
     <button class="install-btn-primary" id="installNowBtn"><i class="fa-solid fa-arrow-down-to-bracket"></i> Install Now</button>
     <button class="install-btn-secondary" id="installLaterBtn">Maybe Later</button>
-    <a class="install-btn-primary" id="installOpenBtn" href="#" style="display:none;flex-direction:column;gap:2px;text-decoration:none;">
-      <span><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Goddy Tabi</span>
-      <span class="install-link-sub" id="installOpenBtnUrl"></span>
+    <a class="install-btn-primary" id="installOpenBtn" href="#" style="display:none;text-decoration:none;">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Goddy Tabi
     </a>
   </div>
 </div>
@@ -1351,7 +1349,6 @@ footer.app-footer strong{color:var(--navy-deep);}
   const installTitle = document.getElementById('installTitle');
   const installDesc = document.getElementById('installDesc');
   const installOpenBtn = document.getElementById('installOpenBtn');
-  const installOpenBtnUrl = document.getElementById('installOpenBtnUrl');
   const installStatusSub = document.getElementById('installStatusSub');
 
   // state: 'prompt' (default ask), 'installing' (blurred, blocked, spinner),
@@ -1370,9 +1367,7 @@ footer.app-footer strong{color:var(--navy-deep);}
     } else if(state === 'success'){
       installTitle.textContent = 'Installed!';
       installDesc.textContent = 'Goddy Tabi is on your home screen now.';
-      const url = window.location.href;
-      installOpenBtn.href = url;
-      installOpenBtnUrl.textContent = window.location.hostname + window.location.pathname;
+      installOpenBtn.href = window.location.href;
     } else {
       installTitle.textContent = 'Install Goddy Tabi';
       installDesc.textContent = 'Add Goddy Tabi to your home screen for one-tap access — it opens instantly, just like a regular app.';
@@ -1432,13 +1427,15 @@ footer.app-footer strong{color:var(--navy-deep);}
         setInstallState('prompt');
         return;
       }
-      // Accepted: stay in the "installing" state until the appinstalled
-      // event confirms it (handled above). Fallback in case that event
-      // never fires on this device/browser combo.
+      // Accepted: stay on the spinner until the real appinstalled event
+      // fires (that's what actually flips the modal to "Installed").
+      // This timer is only a safety net in case that event never arrives
+      // on some device/browser combo — it does NOT fake success on its own,
+      // it just stops the spinner from spinning forever.
       clearTimeout(installFallbackTimer);
       installFallbackTimer = setTimeout(() => {
         if(installOverlay.classList.contains('installing')) setInstallState('success');
-      }, 6000);
+      }, 10000);
     } else {
       openInstallModal();
     }
