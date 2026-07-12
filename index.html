@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>Tobby Tabi</title>
+<meta name="theme-color" content="#0b1c3d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tobby Tabi">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --navy-deep:#081530;
+  --navy:#0d2249;
+  --navy-mid:#15316b;
+  --navy-soft:#e9edf6;
+  --gold:#d4a537;
+  --gold-deep:#b3861f;
+  --gold-light:#f7ecc9;
+  --cream:#faf8f3;
+  --white:#ffffff;
+  --text:#161c2c;
+  --text-soft:#6b7280;
+  --line:#e4e2d8;
+  --whatsapp:#25d366;
+  --whatsapp-deep:#1da851;
+  --danger:#c0503d;
+  --radius-lg:20px;
+  --radius-md:14px;
+  --radius-sm:10px;
+  --shadow:0 6px 20px rgba(8,21,48,0.10);
+  --shadow-lg:0 16px 40px rgba(8,21,48,0.18);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:var(--cream);
+  color:var(--text);
+  overscroll-behavior-y:none;
+}
+h1,h2,h3,.brand,.display{font-family:'Sora',sans-serif;}
+button{font-family:inherit;}
+.app-shell{max-width:480px;margin:0 auto;min-height:100vh;background:var(--cream);position:relative;overflow-x:hidden;}
+.screen{display:none;}
+.screen.active{display:block;}
+
+/* ===================== SPLASH ===================== */
+#splashScreen{
+  position:fixed; inset:0; z-index:300;
+  background:radial-gradient(120% 120% at 50% 0%, var(--navy-mid) 0%, var(--navy) 45%, var(--navy-deep) 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:var(--white); text-align:center;
+}
+.splash-ring{
+  width:132px;height:132px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  position:relative; margin-bottom:26px;
+}
+.splash-ring::before{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(var(--gold) 0deg, rgba(212,165,55,0.08) 300deg);
+  animation:spin 1.4s linear infinite;
+}
+.splash-ring::after{
+  content:'';position:absolute;inset:6px;border-radius:50%;background:var(--navy-deep);
+}
+.splash-logo{
+  width:96px;height:96px;border-radius:50%;object-fit:cover;
+  background:var(--white); z-index:2; box-shadow:0 0 0 3px rgba(255,255,255,0.06);
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.splash-title{font-size:22px;font-weight:800;letter-spacing:0.5px;margin:0 0 6px;}
+.splash-sub{font-size:12.5px;color:var(--gold-light);opacity:0.85;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin:0;}
+.splash-foot{position:absolute;bottom:34px;font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:0.4px;}
+
+/* ===================== ONBOARDING ===================== */
+#onboardingScreen{
+  position:fixed;inset:0;z-index:250;background:var(--cream);
+  display:none;flex-direction:column;
+}
+#onboardingScreen.active{display:flex;}
+.ob-top{padding:22px 24px 0;}
+.ob-progress{display:flex;gap:6px;margin-bottom:22px;}
+.ob-progress i{flex:1;height:4px;border-radius:4px;background:var(--line);}
+.ob-progress i.done{background:var(--gold);}
+.ob-body{flex:1;overflow-y:auto;padding:0 24px 24px;}
+.ob-step{display:none;}
+.ob-step.active{display:block;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.ob-eyebrow{font-size:11.5px;font-weight:700;color:var(--gold-deep);text-transform:uppercase;letter-spacing:1.2px;margin:0 0 8px;}
+.ob-h{font-size:24px;font-weight:800;color:var(--navy-deep);margin:0 0 8px;line-height:1.25;}
+.ob-p{font-size:13.5px;color:var(--text-soft);margin:0 0 26px;line-height:1.5;}
+.ob-field label{display:block;font-size:12.5px;font-weight:700;color:var(--navy-deep);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.4px;}
+.ob-input{
+  width:100%;border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:15px 16px;
+  font-size:16px;font-family:'Inter',sans-serif;color:var(--text);background:var(--white);
+}
+.ob-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,165,55,0.16);}
+.chip-grid{display:flex;flex-wrap:wrap;gap:9px;margin-top:4px;}
+.ob-chip{
+  padding:10px 16px;border-radius:24px;border:1.5px solid var(--line);background:var(--white);
+  font-size:13px;font-weight:600;color:var(--text-soft);cursor:pointer;transition:all .15s ease;
+  display:flex; align-items:center; gap:6px;
+}
+.ob-chip.selected{background:var(--navy);border-color:var(--navy);color:var(--white);}
+.ob-chip.add-chip{border-style:dashed;color:var(--gold-deep);border-color:var(--gold);font-weight:700;}
+.add-subject-row{display:flex;gap:8px;margin-top:14px;}
+.add-subject-row input{flex:1;}
+.add-subject-row button{
+  background:var(--navy);color:var(--white);border:none;border-radius:var(--radius-sm);
+  padding:0 18px;font-weight:700;font-size:13px;cursor:pointer;
+}
+.ob-nav{padding:16px 24px 26px;display:flex;gap:12px;border-top:1px solid var(--line);background:var(--cream);}
+.btn-ghost{
+  flex:0 0 auto;background:var(--white);color:var(--navy-deep);border:1.5px solid var(--line);
+  padding:15px 20px;border-radius:var(--radius-sm);font-weight:700;font-size:14px;cursor:pointer;
+}
+.btn-primary{
+  flex:1;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:var(--navy-deep);border:none;
+  padding:15px 20px;border-radius:var(--radius-sm);font-weight:800;font-size:14.5px;cursor:pointer;
+  box-shadow:0 8px 18px rgba(212,165,55,0.35); display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-primary:active{transform:scale(0.98);}
+.btn-primary:disabled{opacity:0.45;cursor:not-allowed;box-shadow:none;}
+
+/* ===================== SUCCESS SCREEN ===================== */
+#successScreen{
+  position:fixed;inset:0;z-index:260;background:var(--navy-deep);display:none;
+  flex-direction:column;align-items:center;justify-content:center;color:var(--white);text-align:center;padding:32px;
+}
+#successScreen.active{display:flex;}
+.success-check{
+  width:92px;height:92px;border-radius:50%;background:rgba(212,165,55,0.14);
+  display:flex;align-items:center;justify-content:center;margin-bottom:24px;
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1);
+}
+.success-check i{font-size:40px;color:var(--gold);}
+@keyframes popIn{0%{transform:scale(0);opacity:0;}100%{transform:scale(1);opacity:1;}}
+.success-h{font-size:23px;font-weight:800;margin:0 0 10px;}
+.success-p{font-size:14px;color:rgba(255,255,255,0.7);line-height:1.6;margin:0 0 8px;max-width:320px;}
+.success-p strong{color:var(--gold-light);}
+.success-btn{
+  margin-top:28px;width:100%;max-width:320px;background:var(--gold);color:var(--navy-deep);border:none;
+  padding:16px;border-radius:var(--radius-sm);font-weight:800;font-size:15px;cursor:pointer;
+}
+
+/* ===================== INSTALL MODAL ===================== */
+.install-overlay{
+  position:fixed;inset:0;z-index:400;background:rgba(8,21,48,0.62);backdrop-filter:blur(2px);
+  display:none;align-items:center;justify-content:center;padding:24px;
+}
+.install-overlay.open{display:flex;}
+.install-card{
+  background:var(--white);border-radius:22px;max-width:360px;width:100%;
+  padding:28px 24px 24px;text-align:center;box-shadow:var(--shadow-lg);
+  animation:popIn .3s ease;
+}
+.install-icon-wrap{
+  width:76px;height:76px;border-radius:22px;margin:0 auto 18px;overflow:hidden;
+  box-shadow:0 8px 20px rgba(8,21,48,0.2); border:1px solid var(--line);
+}
+.install-icon-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.install-card h3{font-size:18px;color:var(--navy-deep);margin:0 0 8px;font-weight:800;}
+.install-card p{font-size:13px;color:var(--text-soft);line-height:1.55;margin:0 0 20px;}
+.install-steps{text-align:left;background:var(--navy-soft);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:18px;display:none;}
+.install-steps.show{display:block;}
+.install-steps div{font-size:12.5px;color:var(--navy-deep);display:flex;gap:10px;align-items:center;padding:5px 0;}
+.install-steps i{color:var(--gold-deep);width:16px;text-align:center;}
+.install-btn-primary{
+  width:100%;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:var(--navy-deep);border:none;
+  padding:14px;border-radius:12px;font-weight:800;font-size:14.5px;cursor:pointer;margin-bottom:10px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.install-btn-secondary{
+  width:100%;background:transparent;color:var(--text-soft);border:none;
+  padding:8px;font-weight:600;font-size:13px;cursor:pointer;
+}
+
+/* ===================== MAIN APP ===================== */
+#mainApp{display:none;}
+#mainApp.active{display:block;}
+header.top-bar{
+  background:linear-gradient(160deg,var(--navy-mid),var(--navy-deep));
+  color:var(--white); padding:18px 18px 20px; border-bottom:4px solid var(--gold);
+  display:flex; align-items:center; gap:12px;
+}
+.top-logo{width:44px;height:44px;border-radius:50%;object-fit:cover;background:var(--white);flex:0 0 auto;box-shadow:0 0 0 2px rgba(255,255,255,0.15);}
+.top-bar-text{flex:1;min-width:0;}
+.top-bar-text .brand{font-size:16.5px;font-weight:800;margin:0;letter-spacing:0.3px;}
+.top-bar-text .meta{font-size:11.5px;color:var(--gold-light);opacity:0.9;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.icon-btn{
+  width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.12);border:none;color:var(--white);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;font-size:14px;
+  position:relative;
+}
+.notif-badge{
+  position:absolute;top:-3px;right:-3px;min-width:16px;height:16px;padding:0 3px;border-radius:9px;
+  background:var(--danger);color:var(--white);font-size:9.5px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--navy-deep);
+}
+.notif-badge.hidden{display:none;}
+
+/* ===================== NOTIFICATIONS SHEET ===================== */
+.notif-sheet-actions{display:flex;gap:8px;margin:-6px 0 14px;}
+.notif-action-link{
+  background:none;border:none;color:var(--navy-mid);font-size:12px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;background:var(--navy-soft);
+}
+.notif-action-link.danger{color:var(--danger);}
+.notif-list{display:flex;flex-direction:column;gap:8px;}
+.notif-item{
+  display:flex;gap:11px;padding:12px;border-radius:var(--radius-sm);background:var(--white);
+  border:1px solid var(--line);box-shadow:0 2px 8px rgba(8,21,48,0.05);
+}
+.notif-item.unread{border-color:var(--gold);background:var(--gold-light);}
+.notif-item .notif-ico{
+  width:34px;height:34px;border-radius:50%;background:var(--navy-soft);color:var(--navy-mid);flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+.notif-item.unread .notif-ico{background:var(--gold);color:var(--navy-deep);}
+.notif-item .notif-body{flex:1;min-width:0;}
+.notif-item .notif-title{font-size:13px;font-weight:700;color:var(--text);margin:0 0 2px;}
+.notif-item .notif-msg{font-size:12px;color:var(--text-soft);margin:0 0 4px;line-height:1.4;}
+.notif-item .notif-time{font-size:10.5px;color:var(--text-soft);opacity:0.8;}
+.notif-empty{text-align:center;padding:40px 20px;color:var(--text-soft);}
+.notif-empty i{font-size:38px;color:var(--gold);opacity:0.5;margin-bottom:12px;}
+
+/* toggle switch */
+.switch{position:relative;display:inline-block;width:44px;height:25px;flex:0 0 auto;}
+.switch input{opacity:0;width:0;height:0;}
+.switch .slider{
+  position:absolute;cursor:pointer;inset:0;background:#d5d9e0;border-radius:25px;transition:.2s;
+}
+.switch .slider::before{
+  content:"";position:absolute;height:19px;width:19px;left:3px;top:3px;background:var(--white);
+  border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,0.25);
+}
+.switch input:checked + .slider{background:var(--gold);}
+.switch input:checked + .slider::before{transform:translateX(19px);}
+.settings-section-label{padding:14px 4px 6px;font-size:11px;font-weight:800;color:var(--navy-mid);text-transform:uppercase;letter-spacing:0.6px;}
+.settings-row .row-sub{font-size:11px;color:var(--text-soft);margin-top:2px;display:block;}
+
+/* ===================== PROFILE FOOTER / ACTIVITY ===================== */
+.profile-footer-row{display:flex;align-items:center;gap:12px;padding:16px 6px 4px;margin-top:10px;border-top:1px solid var(--line);cursor:pointer;}
+.profile-avatar{
+  width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:var(--navy-deep);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;font-family:'Sora',sans-serif;flex:0 0 auto;
+}
+.profile-footer-text{flex:1;min-width:0;}
+.profile-footer-name{font-size:13.5px;font-weight:700;color:var(--text);}
+.profile-footer-sub{font-size:11.5px;color:var(--text-soft);margin-top:1px;}
+
+.activity-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-nav-btn{width:32px;height:32px;border-radius:50%;border:1.5px solid var(--line);background:var(--white);color:var(--navy-mid);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.cal-nav-btn:disabled{opacity:0.35;cursor:default;}
+.cal-nav-label{font-size:14px;font-weight:800;color:var(--navy-deep);font-family:'Sora',sans-serif;}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:10.5px;font-weight:700;color:var(--text-soft);margin-bottom:4px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-cell{
+  position:relative;aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:12.5px;font-weight:600;color:var(--text);cursor:pointer;background:var(--white);border:1px solid var(--line);
+}
+.cal-cell.empty{visibility:hidden;cursor:default;border:none;}
+.cal-cell.today{border-color:var(--gold);border-width:2px;font-weight:800;}
+.cal-cell.selected{background:var(--navy-deep);color:var(--white);border-color:var(--navy-deep);}
+.cal-cell.upcoming{box-shadow:0 0 0 2px var(--gold-deep) inset;}
+.cal-cell .dots{display:flex;gap:2px;height:5px;}
+.cal-cell .dots .dot{width:5px;height:5px;border-radius:50%;}
+.dot.gold{background:var(--gold);}
+.dot.navy{background:var(--navy-mid);}
+.dot.danger{background:var(--danger);}
+.dot.ring{background:transparent;border:1.3px solid var(--gold-deep);box-sizing:border-box;}
+.cal-legend{display:flex;flex-wrap:wrap;gap:12px 14px;font-size:10.5px;color:var(--text-soft);margin:12px 0 16px;}
+.cal-legend .dot{width:8px;height:8px;display:inline-block;border-radius:50%;margin-right:4px;vertical-align:middle;}
+.day-detail-card{background:var(--navy-soft);border-radius:var(--radius-md);padding:14px;min-height:64px;}
+.day-detail-hint{font-size:12.5px;color:var(--text-soft);margin:0;text-align:center;}
+.day-detail-date{font-size:13px;font-weight:800;color:var(--navy-deep);margin:0 0 8px;}
+.day-detail-item{font-size:12.5px;color:var(--text);margin:0 0 8px;display:flex;gap:8px;align-items:flex-start;line-height:1.4;}
+.day-detail-item:last-child{margin-bottom:0;}
+.day-detail-item i{color:var(--gold-deep);margin-top:2px;width:14px;text-align:center;flex:0 0 auto;}
+.day-detail-item.miss i{color:var(--danger);}
+
+.tab-nav{display:flex;gap:8px;margin:16px 16px 0;}
+.tab-btn{
+  flex:1;padding:12px 8px;border-radius:12px;border:1.5px solid var(--line);
+  background:var(--white);color:var(--text-soft);font-size:13px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+}
+.tab-btn.active{background:var(--navy-deep);border-color:var(--navy-deep);color:var(--white);}
+.view{display:none;padding-bottom:100px;}
+.view.active{display:block;}
+
+.dashboard{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px;}
+.stat-card{background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow);padding:15px 8px;text-align:center;border-top:3px solid var(--navy-mid);}
+.stat-card.gold{border-top-color:var(--gold);}
+.stat-card.pending{border-top-color:var(--danger);}
+.stat-card .num{font-size:22px;font-weight:800;color:var(--navy-deep);font-family:'Sora',sans-serif;}
+.stat-card .label{font-size:10.5px;color:var(--text-soft);margin-top:3px;font-weight:600;letter-spacing:0.2px;}
+
+.section-title{padding:4px 20px 10px;font-size:13px;font-weight:800;color:var(--navy-deep);text-transform:uppercase;letter-spacing:0.6px;}
+
+.student-list{padding:0 16px;display:flex;flex-direction:column;gap:12px;}
+.student-card{
+  background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow);padding:14px;
+  display:flex;align-items:center;gap:12px;border-left:4px solid var(--navy-mid);
+}
+.student-card.done{border-left-color:var(--gold);}
+.student-avatar{
+  width:52px;height:52px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:var(--navy-soft);
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--navy-mid);font-size:17px;
+  font-family:'Sora',sans-serif; border:2px solid var(--white); box-shadow:0 0 0 1.5px var(--line);
+}
+.student-info{flex:1;min-width:0;}
+.student-info h3{margin:0 0 3px;font-size:15px;color:var(--text);font-weight:700;}
+.student-info .meta{font-size:12px;color:var(--text-soft);display:flex;align-items:center;gap:5px;}
+.status-pill{display:inline-block;margin-top:6px;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;letter-spacing:0.3px;text-transform:uppercase;}
+.status-pill.pending{background:#fbeae6;color:var(--danger);}
+.status-pill.done{background:var(--gold-light);color:var(--gold-deep);}
+.student-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+.btn-update{
+  background:var(--navy-deep);color:var(--white);border:none;padding:9px 12px;border-radius:9px;
+  font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;
+}
+.btn-update:active{transform:scale(0.96);}
+.icon-link{background:none;border:none;color:var(--text-soft);font-size:15px;cursor:pointer;padding:4px;}
+
+.empty-state{text-align:center;padding:50px 30px;color:var(--text-soft);}
+.empty-state i{font-size:44px;color:var(--gold);opacity:0.55;margin-bottom:16px;}
+.empty-state h3{color:var(--navy-deep);font-size:16px;margin:0 0 8px;}
+.empty-state p{font-size:13px;line-height:1.6;margin:0;}
+
+/* FAB */
+.fab{
+  position:fixed;bottom:26px;right:calc(50% - 240px + 22px);z-index:60;
+  width:60px;height:60px;border-radius:50%;background:linear-gradient(150deg,var(--whatsapp),var(--whatsapp-deep));
+  color:var(--white);border:none;font-size:25px;box-shadow:0 10px 24px rgba(29,168,81,0.45);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.fab:active{transform:scale(0.94);}
+@media (max-width:480px){.fab{right:22px;}}
+
+/* ===================== MODAL / SHEET ===================== */
+.overlay{position:fixed;inset:0;background:rgba(8,21,48,0.55);display:none;align-items:flex-end;justify-content:center;z-index:150;}
+.overlay.open{display:flex;}
+.sheet{background:var(--cream);width:100%;max-width:480px;max-height:92vh;overflow-y:auto;border-radius:22px 22px 0 0;padding:20px 20px 30px;animation:slideUp .25s ease-out;}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.sheet-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.sheet-header h2{font-size:17.5px;margin:0;color:var(--navy-deep);font-weight:800;}
+.sheet-header .sub{font-size:12px;color:var(--text-soft);margin-top:2px;}
+.close-btn{background:var(--white);border:1px solid var(--line);width:34px;height:34px;border-radius:50%;font-size:14px;color:var(--text-soft);cursor:pointer;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+
+form .field{margin-bottom:16px;}
+form label{display:block;font-size:12.5px;font-weight:700;color:var(--navy-deep);margin-bottom:7px;text-transform:uppercase;letter-spacing:0.3px;}
+form label .optional{font-size:10.5px;font-weight:500;color:var(--text-soft);text-transform:none;letter-spacing:0;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.option-group{display:flex;flex-wrap:wrap;gap:8px;}
+.option-chip{padding:8px 13px;border-radius:20px;border:1.5px solid var(--line);background:var(--white);font-size:12.5px;font-weight:600;color:var(--text-soft);cursor:pointer;}
+.option-chip.selected{background:var(--navy-deep);border-color:var(--navy-deep);color:var(--white);}
+input[type=text],input[type=tel],textarea{
+  width:100%;border:1.5px solid var(--line);border-radius:10px;padding:12px 13px;
+  font-family:'Inter',sans-serif;font-size:14.5px;color:var(--text);background:var(--white);resize:vertical;
+}
+input[type=text]:focus,input[type=tel]:focus,textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,165,55,0.16);}
+textarea{min-height:80px;}
+
+.phone-input-wrap{display:flex;align-items:stretch;gap:8px;}
+.phone-prefix{
+  background:var(--navy-soft);color:var(--navy-deep);border:1.5px solid var(--line);border-radius:10px;
+  padding:0 14px;font-weight:800;font-size:14px;display:flex;align-items:center;gap:6px;flex:0 0 auto;
+}
+.phone-prefix i{color:#2a9d3f;}
+.phone-input-wrap input{flex:1;}
+
+.photo-row{display:flex;align-items:center;gap:14px;margin-top:4px;}
+.photo-preview{
+  width:66px;height:66px;border-radius:50%;background:var(--navy-soft);border:2px dashed var(--line);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;color:var(--text-soft);font-size:20px;
+}
+.photo-preview img{width:100%;height:100%;object-fit:cover;}
+.photo-btns{display:flex;flex-direction:column;gap:8px;flex:1;}
+.photo-btn{
+  border:1.5px solid var(--line);background:var(--white);color:var(--navy-deep);border-radius:10px;
+  padding:9px 12px;font-size:12.5px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;justify-content:center;
+}
+.photo-btn i{color:var(--gold-deep);}
+
+.btn-send{
+  width:100%;background:linear-gradient(135deg,var(--whatsapp),var(--whatsapp-deep));color:var(--white);border:none;
+  padding:15px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;margin-top:6px;
+  box-shadow:0 8px 18px rgba(29,168,81,0.3);display:flex;align-items:center;justify-content:center;gap:9px;
+}
+.btn-send:active{transform:scale(0.98);}
+.btn-send:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-save{
+  width:100%;background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:var(--navy-deep);border:none;
+  padding:15px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;margin-top:6px;
+  box-shadow:0 8px 18px rgba(212,165,55,0.3);display:flex;align-items:center;justify-content:center;gap:9px;
+}
+.btn-save:active{transform:scale(0.98);}
+.hint{font-size:11.5px;color:var(--text-soft);margin-top:8px;line-height:1.5;text-align:center;}
+
+.weekly-wrap{padding:16px;}
+.weekly-card{background:var(--white);border-radius:var(--radius-md);box-shadow:var(--shadow);padding:18px 16px;margin-bottom:14px;}
+.weekly-card h3{margin:0 0 4px;font-size:14.5px;color:var(--navy-deep);font-weight:800;}
+.weekly-card .sub{font-size:12px;color:var(--text-soft);margin-bottom:12px;}
+.card-title-row{display:flex;align-items:center;justify-content:space-between;}
+.card-title-row h3{margin:0;}
+.mini-add-btn{
+  width:26px;height:26px;border-radius:50%;border:1.5px solid var(--gold);background:var(--gold-light);
+  color:var(--gold-deep);font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;
+}
+.mini-add-btn:active{transform:scale(0.92);}
+.select-input{
+  width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font-size:14px;color:var(--text);background:var(--white);
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 12px center;
+}
+.subject-chip-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.subject-chip{padding:9px 14px;border-radius:20px;border:1.5px solid var(--line);background:var(--white);font-size:12.5px;font-weight:600;color:var(--text-soft);cursor:pointer;}
+.subject-chip.selected{background:var(--gold);border-color:var(--gold);color:var(--navy-deep);}
+.subject-topic-list{display:flex;flex-direction:column;gap:12px;margin-top:14px;}
+.subject-topic-item{border:1.5px solid var(--navy-soft);background:var(--navy-soft);border-radius:12px;padding:12px;}
+.subject-topic-item label{display:block;font-size:12px;font-weight:700;color:var(--navy-deep);margin-bottom:6px;text-transform:none;}
+.subject-topic-item input[type=text]{background:var(--white);}
+.announce-chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.announce-chip{
+  padding:8px 8px 8px 12px;border-radius:10px;border:1.5px dashed var(--line);background:var(--white);
+  font-size:11.5px;font-weight:600;color:var(--text-soft);cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.announce-chip.used{opacity:0.5;border-style:solid;}
+.announce-chip .announce-text{cursor:pointer;}
+.announce-chip .announce-edit{
+  width:20px;height:20px;border-radius:50%;border:none;background:var(--navy-soft);color:var(--navy-mid);
+  font-size:9.5px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;
+}
+.btn-secondary{
+  width:100%;background:var(--white);color:var(--navy-deep);border:1.5px solid var(--navy-mid);
+  padding:13px;border-radius:12px;font-size:13.5px;font-weight:700;cursor:pointer;margin-top:8px;
+}
+.last-sent-badge{font-size:11.5px;color:var(--text-soft);margin:-4px 16px 14px;}
+.last-sent-badge strong{color:var(--navy-deep);}
+
+footer.app-footer{text-align:center;padding:20px 20px 30px;font-size:11px;color:var(--text-soft);}
+footer.app-footer strong{color:var(--navy-deep);}
+
+/* Settings sheet extras */
+.settings-list{display:flex;flex-direction:column;gap:4px;}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--line);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row .lbl{font-size:13.5px;font-weight:600;color:var(--text);}
+.settings-row .val{font-size:12.5px;color:var(--text-soft);}
+.settings-row i{color:var(--gold-deep);width:18px;text-align:center;margin-right:10px;}
+.settings-row-left{display:flex;align-items:center;}
+.danger-link{color:var(--danger);font-weight:700;}
+
+/* ===================== CUSTOM ALERT / CONFIRM MODAL ===================== */
+.tt-modal-overlay{
+  position:fixed;inset:0;z-index:600;background:rgba(8,21,48,0.6);backdrop-filter:blur(2px);
+  display:none;align-items:center;justify-content:center;padding:26px;
+}
+.tt-modal-overlay.open{display:flex;}
+.tt-modal-card{
+  background:var(--white);border-radius:20px;max-width:340px;width:100%;padding:26px 22px 22px;
+  text-align:center;box-shadow:var(--shadow-lg);animation:popIn .25s ease;
+}
+.tt-modal-icon{
+  width:56px;height:56px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;
+  background:#fbeae6;color:var(--danger);font-size:22px;
+}
+.tt-modal-icon.info{background:var(--navy-soft);color:var(--navy-mid);}
+.tt-modal-card h3{font-size:16.5px;color:var(--navy-deep);margin:0 0 8px;font-weight:800;}
+.tt-modal-card p{font-size:13px;color:var(--text-soft);line-height:1.55;margin:0 0 20px;white-space:pre-line;}
+.tt-modal-actions{display:flex;gap:10px;}
+.tt-modal-actions button{flex:1;padding:12px;border-radius:11px;font-size:13.5px;font-weight:700;cursor:pointer;}
+.tt-modal-actions .btn-ghost{flex:1;visibility:visible;}
+.tt-modal-actions .btn-primary{box-shadow:none;padding:12px;}
+
+/* ===================== WHATSAPP PREVIEW ===================== */
+.preview-overlay{
+  position:fixed;inset:0;z-index:550;background:var(--cream);display:none;flex-direction:column;
+}
+.preview-overlay.open{display:flex;}
+.preview-header{
+  background:linear-gradient(160deg,var(--navy-mid),var(--navy-deep));color:var(--white);
+  padding:16px 16px 16px;display:flex;align-items:center;gap:12px;border-bottom:4px solid var(--gold);flex:0 0 auto;
+}
+.preview-header .close-btn{background:rgba(255,255,255,0.14);border:none;color:var(--white);}
+.preview-header-text strong{display:block;font-size:15px;}
+.preview-header-text span{display:block;font-size:11.5px;color:var(--gold-light);opacity:0.9;margin-top:1px;}
+.preview-chat-bg{
+  flex:1;overflow-y:auto;padding:20px 16px 16px;
+  background-color:#e9e0cf;
+  background-image:radial-gradient(rgba(13,34,73,0.05) 1px, transparent 1px);
+  background-size:16px 16px;
+}
+.preview-bubble{
+  background:#dcf8c6;border-radius:12px 12px 3px 12px;padding:14px 14px 20px;max-width:92%;margin-left:auto;
+  box-shadow:0 2px 6px rgba(0,0,0,0.12);font-size:13.5px;line-height:1.6;color:#1a2e0a;position:relative;
+  white-space:pre-wrap;word-break:break-word;
+}
+.preview-bubble strong{color:#0d2249;}
+.preview-bubble .preview-meta{
+  position:absolute;bottom:6px;right:12px;font-size:10px;color:#5f8a4a;display:flex;align-items:center;gap:4px;
+}
+.preview-actions{padding:14px 16px 26px;display:flex;gap:12px;flex:0 0 auto;background:var(--cream);border-top:1px solid var(--line);}
+.preview-actions .btn-ghost{flex:1;visibility:visible;padding:15px;}
+.preview-actions .btn-send{flex:1.4;margin-top:0;}
+</style>
+</head>
+<body>
+
+<!-- ===================== SPLASH ===================== -->
+<div id="splashScreen">
+  <div class="splash-ring"><img class="splash-logo" id="splashLogo" alt="School Logo" onerror="this.onerror=null;this.style.display='none';this.insertAdjacentHTML('afterend','&lt;i class=&quot;fa-solid fa-graduation-cap&quot; style=&quot;font-size:38px;color:var(--gold);z-index:2;&quot;&gt;&lt;/i&gt;');"></div>
+  <h1 class="splash-title">Tobby Tabi</h1>
+  <p class="splash-sub">Teacher · Parent Bridge</p>
+  <div class="splash-foot">Loading your workspace…</div>
+</div>
+
+<div class="app-shell">
+
+  <!-- ===================== ONBOARDING ===================== -->
+  <div id="onboardingScreen">
+    <div class="ob-top">
+      <div class="ob-progress">
+        <i class="ob-dot done" data-step="1"></i>
+        <i class="ob-dot" data-step="2"></i>
+        <i class="ob-dot" data-step="3"></i>
+      </div>
+    </div>
+    <div class="ob-body">
+      <div class="ob-step active" data-step="1">
+        <p class="ob-eyebrow">Step 1 of 3</p>
+        <h2 class="ob-h">Welcome. What's your name?</h2>
+        <p class="ob-p">This is how you'll be signed on every update sent to parents.</p>
+        <div class="ob-field">
+          <label for="obTeacherName">Your Full Name</label>
+          <input type="text" class="ob-input" id="obTeacherName" placeholder="e.g. Mrs. Ngwa Priscilla" autocomplete="name">
+        </div>
+      </div>
+
+      <div class="ob-step" data-step="2">
+        <p class="ob-eyebrow">Step 2 of 3</p>
+        <h2 class="ob-h">Which class do you teach?</h2>
+        <p class="ob-p">We'll use this to label your student list and weekly updates.</p>
+        <div class="ob-field">
+          <label for="obClassName">Class Name</label>
+          <input type="text" class="ob-input" id="obClassName" placeholder="e.g. Class 4 or Nursery 2">
+        </div>
+      </div>
+
+      <div class="ob-step" data-step="3">
+        <p class="ob-eyebrow">Step 3 of 3</p>
+        <h2 class="ob-h">What subjects do you teach?</h2>
+        <p class="ob-p">Pick the ones that apply — no need to select all. You can add more anytime.</p>
+        <div class="chip-grid" id="obSubjectGrid"></div>
+        <div class="add-subject-row" id="obAddSubjectRow" style="display:none;">
+          <input type="text" class="ob-input" id="obNewSubjectInput" placeholder="Type a subject name">
+          <button type="button" id="obAddSubjectBtn">Add</button>
+        </div>
+      </div>
+    </div>
+    <div class="ob-nav">
+      <button class="btn-ghost" id="obBackBtn" style="visibility:hidden;"><i class="fa-solid fa-arrow-left"></i></button>
+      <button class="btn-primary" id="obNextBtn">Continue <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- ===================== SUCCESS ===================== -->
+  <div id="successScreen">
+    <div class="success-check"><i class="fa-solid fa-check"></i></div>
+    <h2 class="success-h">You're all set!</h2>
+    <p class="success-p">Welcome aboard, <strong id="successTeacherName">Teacher</strong>. Your workspace for <strong id="successClassName">your class</strong> is ready to go.</p>
+    <button class="success-btn" id="successContinueBtn">Go to Dashboard</button>
+  </div>
+
+  <!-- ===================== MAIN APP ===================== -->
+  <div id="mainApp">
+    <header class="top-bar">
+      <img class="top-logo" id="topLogo" alt="School Logo">
+      <div class="top-bar-text">
+        <p class="brand">Tobby Tabi</p>
+        <p class="meta" id="topBarMeta">Class · Teacher</p>
+      </div>
+      <button class="icon-btn" id="notifBellBtn" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="notif-badge hidden" id="notifBadge">0</span></button>
+      <button class="icon-btn" id="settingsBtn" aria-label="Settings"><i class="fa-solid fa-gear"></i></button>
+    </header>
+
+    <div class="tab-nav">
+      <button class="tab-btn active" id="tabIndividualBtn"><i class="fa-solid fa-user-graduate"></i> Student Updates</button>
+      <button class="tab-btn" id="tabWeeklyBtn"><i class="fa-solid fa-calendar-week"></i> Weekly Update</button>
+    </div>
+
+    <div class="view active" id="individualView">
+      <div class="dashboard">
+        <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">Students</div></div>
+        <div class="stat-card gold"><div class="num" id="statDone">0</div><div class="label">Updates Sent</div></div>
+        <div class="stat-card pending"><div class="num" id="statPending">0</div><div class="label">Pending</div></div>
+      </div>
+      <div class="section-title">My Students</div>
+      <div class="student-list" id="studentList"></div>
+    </div>
+
+    <div class="view" id="weeklyView">
+      <div class="weekly-wrap">
+        <div class="last-sent-badge" id="lastSentBadge"></div>
+        <div class="weekly-card">
+          <div class="card-title-row">
+            <h3>Subjects Taught This Week</h3>
+            <button type="button" class="mini-add-btn" id="openSubjectManagerBtn" aria-label="Add subject"><i class="fa-solid fa-plus"></i></button>
+          </div>
+          <div class="sub">Tap the subjects you covered. A topic box appears for each.</div>
+          <div class="subject-chip-grid" id="subjectChipGrid"></div>
+          <div class="subject-topic-list" id="subjectTopicList"></div>
+        </div>
+        <div class="weekly-card">
+          <div class="card-title-row">
+            <h3>Announcements &amp; Reminders</h3>
+            <button type="button" class="mini-add-btn" id="openAddAnnouncementBtn" aria-label="Add announcement"><i class="fa-solid fa-plus"></i></button>
+          </div>
+          <div class="sub">Tap to add a common note. Use the pencil to edit or remove one.</div>
+          <div class="announce-chip-grid" id="announceChipGrid"></div>
+          <textarea id="weeklyNotesInput" placeholder="Notes for parents this week..."></textarea>
+        </div>
+        <button class="btn-send" id="weeklySendBtn"><i class="fa-brands fa-whatsapp"></i> Send Weekly Update</button>
+        <button class="btn-secondary" id="weeklyCopyBtn"><i class="fa-regular fa-copy"></i> Copy Message Instead</button>
+        <p class="hint">Sending opens WhatsApp with the message ready — pick your class parents' group, then press Send yourself. Nothing sends automatically.</p>
+      </div>
+    </div>
+
+    <footer class="app-footer">
+      <strong id="footerSchoolName">Tobby Tabby Bilingual Nursery and Primary School</strong><br>
+      Tobby Tabi · Teacher · Parent Bridge
+    </footer>
+  </div>
+
+  <button class="fab" id="fabAddStudent" aria-label="Add Student"><i class="fa-brands fa-whatsapp"></i></button>
+</div>
+
+<!-- ===================== ADD STUDENT SHEET ===================== -->
+<div class="overlay" id="addStudentOverlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <div><h2>Add Student</h2><div class="sub">Enter the child's details</div></div>
+      <button class="close-btn" id="closeAddStudentBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="addStudentForm">
+      <div class="field">
+        <label for="newStudentName">Child's Name</label>
+        <input type="text" id="newStudentName" placeholder="e.g. Ekema Divine" required>
+      </div>
+      <div class="field">
+        <label for="newStudentPhone">Parent WhatsApp Number</label>
+        <div class="phone-input-wrap">
+          <div class="phone-prefix"><i class="fa-brands fa-whatsapp"></i> +237</div>
+          <input type="tel" id="newStudentPhone" placeholder="6XX XXX XXX" inputmode="numeric" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>Photo <span class="optional">(optional)</span></label>
+        <div class="photo-row">
+          <div class="photo-preview" id="newStudentPhotoPreview"><i class="fa-solid fa-camera"></i></div>
+          <div class="photo-btns">
+            <button type="button" class="photo-btn" id="takePhotoBtn"><i class="fa-solid fa-camera"></i> Take Photo</button>
+            <button type="button" class="photo-btn" id="choosePhotoBtn"><i class="fa-solid fa-image"></i> Choose from Gallery</button>
+          </div>
+        </div>
+        <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display:none;">
+        <input type="file" accept="image/*" id="galleryInput" style="display:none;">
+      </div>
+      <button type="submit" class="btn-save"><i class="fa-solid fa-user-plus"></i> Add Student</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== PROGRESS UPDATE SHEET ===================== -->
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <div><h2>Update Progress</h2><div class="sub" id="formStudentName">Student</div></div>
+      <button class="close-btn" id="closeBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="progressForm">
+      <div class="field">
+        <label>Academic Progress</label>
+        <div class="option-group" data-group="academic">
+          <div class="option-chip" data-value="Excellent">Excellent</div>
+          <div class="option-chip" data-value="Very Good">Very Good</div>
+          <div class="option-chip" data-value="Good">Good</div>
+          <div class="option-chip" data-value="Improving">Improving</div>
+          <div class="option-chip" data-value="Needs Support">Needs Support</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Behaviour</label>
+        <div class="option-group" data-group="behaviour">
+          <div class="option-chip" data-value="Excellent">Excellent</div>
+          <div class="option-chip" data-value="Good">Good</div>
+          <div class="option-chip" data-value="Needs Improvement">Needs Improvement</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Attendance</label>
+        <div class="option-group" data-group="attendance">
+          <div class="option-chip" data-value="Excellent">Excellent</div>
+          <div class="option-chip" data-value="Good">Good</div>
+          <div class="option-chip" data-value="Needs Attention">Needs Attention</div>
+        </div>
+      </div>
+      <div class="field field-row">
+        <div><label>Attendance Rate <span class="optional">(optional)</span></label><input type="text" id="attendanceRateInput" placeholder="e.g. 92%"></div>
+        <div><label>Class Position <span class="optional">(optional)</span></label><input type="text" id="positionInput" placeholder="e.g. 5th of 20"></div>
+      </div>
+      <div class="field"><label>Areas of Strength</label><input type="text" id="strengthInput" placeholder="e.g. Good participation in class"></div>
+      <div class="field"><label>Area Needing Improvement</label><input type="text" id="improveInput" placeholder="e.g. Reading practice"></div>
+      <div class="field"><label>Teacher's Message</label><textarea id="messageInput" placeholder="Write a short personal note to the parent..."></textarea></div>
+      <button type="submit" class="btn-send" id="sendBtn"><i class="fa-brands fa-whatsapp"></i> Send Update to Parent</button>
+      <p class="hint">This opens WhatsApp with the message ready. You'll still press Send yourself.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== SETTINGS SHEET ===================== -->
+<div class="overlay" id="settingsOverlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <div><h2>Settings</h2><div class="sub">Your profile &amp; app options</div></div>
+      <button class="close-btn" id="closeSettingsBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="settings-list">
+      <div class="settings-row">
+        <div class="settings-row-left"><i class="fa-solid fa-user"></i><span class="lbl">Teacher Name</span></div>
+        <span class="val" id="settingsTeacherName">—</span>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left"><i class="fa-solid fa-chalkboard"></i><span class="lbl">Class</span></div>
+        <span class="val" id="settingsClassName">—</span>
+      </div>
+      <div class="settings-row" id="editProfileRow" style="cursor:pointer;">
+        <div class="settings-row-left"><i class="fa-solid fa-pen"></i><span class="lbl">Edit Name &amp; Class</span></div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--text-soft);"></i>
+      </div>
+      <div class="settings-row" id="installRow" style="cursor:pointer;">
+        <div class="settings-row-left"><i class="fa-solid fa-arrow-down-to-bracket"></i><span class="lbl">Install App</span></div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--text-soft);"></i>
+      </div>
+
+      <div class="settings-section-label">Notifications</div>
+      <div class="settings-row" id="notifStatusRow" style="cursor:pointer;">
+        <div class="settings-row-left"><i class="fa-solid fa-bell"></i><span class="lbl">Deadline Reminders<span class="row-sub" id="notifStatusSub">Not enabled</span></span></div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--text-soft);"></i>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left"><i class="fa-solid fa-user-graduate"></i><span class="lbl">Student Progress Reminders</span></div>
+        <label class="switch"><input type="checkbox" id="toggleIndividualReminders"><span class="slider"></span></label>
+      </div>
+      <div class="settings-row">
+        <div class="settings-row-left"><i class="fa-solid fa-calendar-week"></i><span class="lbl">Weekly Update Reminders</span></div>
+        <label class="switch"><input type="checkbox" id="toggleWeeklyReminders"><span class="slider"></span></label>
+      </div>
+
+      <div class="profile-footer-row" id="openActivityRow">
+        <div class="profile-avatar" id="profileAvatarInitials">--</div>
+        <div class="profile-footer-text">
+          <div class="profile-footer-name" id="profileFooterName">Teacher</div>
+          <div class="profile-footer-sub">View my activity &amp; stats</div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color:var(--text-soft);"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MY ACTIVITY SHEET ===================== -->
+<div class="overlay" id="activityOverlay">
+  <div class="sheet" style="max-height:96vh;">
+    <div class="sheet-header">
+      <div><h2>My Activity</h2><div class="sub">Your teaching record</div></div>
+      <button class="close-btn" id="closeActivityBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="activity-stats">
+      <div class="stat-card gold"><div class="num" id="actStatMonthIndividual">0</div><div class="label">Updates This Month</div></div>
+      <div class="stat-card"><div class="num" id="actStatMonthWeekly">0</div><div class="label">Weekly Sent</div></div>
+      <div class="stat-card pending"><div class="num" id="actStatStreak">0</div><div class="label">Week Streak</div></div>
+    </div>
+
+    <div class="cal-nav">
+      <button type="button" class="cal-nav-btn" id="calPrevBtn" aria-label="Previous month"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="cal-nav-label" id="calMonthLabel">—</div>
+      <button type="button" class="cal-nav-btn" id="calNextBtn" aria-label="Next month"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+    <div class="cal-grid" id="calGrid"></div>
+
+    <div class="cal-legend">
+      <span><i class="dot gold"></i>Progress sent</span>
+      <span><i class="dot navy"></i>Weekly sent</span>
+      <span><i class="dot danger"></i>Missed deadline</span>
+      <span><i class="dot ring"></i>Upcoming</span>
+    </div>
+
+    <div class="day-detail-card" id="dayDetailCard">
+      <p class="day-detail-hint">Tap a date to see what happened that day.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== EDIT PROFILE SHEET ===================== -->
+<div class="overlay" id="editProfileOverlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <div><h2>Edit Profile</h2><div class="sub">Update your name and class</div></div>
+      <button class="close-btn" id="closeEditProfileBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="editProfileForm">
+      <div class="field"><label>Your Full Name</label><input type="text" id="editTeacherName" required></div>
+      <div class="field"><label>Class Name</label><input type="text" id="editClassName" required></div>
+      <div class="field">
+        <label>Subjects You Teach</label>
+        <div class="chip-grid" id="editSubjectGrid"></div>
+        <div class="add-subject-row">
+          <input type="text" class="ob-input" id="editNewSubjectInput" placeholder="Add another subject">
+          <button type="button" id="editAddSubjectBtn">Add</button>
+        </div>
+      </div>
+      <button type="submit" class="btn-save"><i class="fa-solid fa-check"></i> Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== EDIT ANNOUNCEMENT SHEET ===================== -->
+<div class="overlay" id="editAnnouncementOverlay">
+  <div class="sheet" style="max-width:480px;">
+    <div class="sheet-header">
+      <div><h2 id="announceSheetTitle">Add Announcement</h2><div class="sub">This is saved for future weekly updates</div></div>
+      <button class="close-btn" id="closeAnnouncementBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form id="announcementForm">
+      <div class="field">
+        <label>Announcement Text</label>
+        <input type="text" id="announcementTextInput" placeholder="e.g. PTA meeting this Friday" required>
+      </div>
+      <button type="submit" class="btn-save"><i class="fa-solid fa-check"></i> Save Announcement</button>
+      <button type="button" class="btn-secondary danger-link" id="deleteAnnouncementBtn" style="display:none;border-color:var(--danger);"><i class="fa-regular fa-trash-can"></i> Remove Announcement</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== INSTALL MODAL ===================== -->
+<div class="install-overlay" id="installOverlay">
+  <div class="install-card">
+    <div class="install-icon-wrap"><img id="installLogo" alt="Tobby Tabi" style="width:100%;height:100%;object-fit:cover;"></div>
+    <h3>Install Tobby Tabi</h3>
+    <p>Add Tobby Tabi to your home screen for one-tap access — it opens instantly, just like a regular app.</p>
+    <div class="install-steps" id="installSteps"></div>
+    <button class="install-btn-primary" id="installNowBtn"><i class="fa-solid fa-arrow-down-to-bracket"></i> Install Now</button>
+    <button class="install-btn-secondary" id="installLaterBtn">Maybe Later</button>
+  </div>
+</div>
+
+<!-- ===================== NOTIFICATION PERMISSION MODAL ===================== -->
+<div class="install-overlay" id="notifPermOverlay">
+  <div class="install-card">
+    <div class="install-icon-wrap" style="display:flex;align-items:center;justify-content:center;background:var(--navy-deep);">
+      <i class="fa-solid fa-bell" style="font-size:30px;color:var(--gold);"></i>
+    </div>
+    <h3>Never miss a deadline</h3>
+    <p>Turn on notifications and Tobby Tabi will remind you a day before, a few hours before, and again one hour before the Friday 11:59 PM deadline for student progress and the weekly class update.</p>
+    <button class="install-btn-primary" id="notifEnableBtn"><i class="fa-solid fa-bell"></i> Enable Notifications</button>
+    <button class="install-btn-secondary" id="notifLaterBtn">Maybe Later</button>
+  </div>
+</div>
+
+<!-- ===================== NOTIFICATIONS SHEET ===================== -->
+<div class="overlay" id="notifOverlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <div><h2>Notifications</h2><div class="sub">Deadline reminders &amp; alerts</div></div>
+      <button class="close-btn" id="closeNotifBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="notif-sheet-actions">
+      <button type="button" class="notif-action-link" id="markAllReadBtn"><i class="fa-solid fa-check-double"></i> Mark all as read</button>
+      <button type="button" class="notif-action-link danger" id="clearAllNotifsBtn"><i class="fa-solid fa-broom"></i> Clear all</button>
+    </div>
+    <div class="notif-list" id="notifList"></div>
+  </div>
+</div>
+
+
+<!-- ===================== CUSTOM ALERT / CONFIRM MODAL ===================== -->
+<div class="tt-modal-overlay" id="ttAlertOverlay">
+  <div class="tt-modal-card">
+    <div class="tt-modal-icon" id="ttModalIcon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <h3 id="ttModalTitle">Heads up</h3>
+    <p id="ttModalMessage"></p>
+    <div class="tt-modal-actions">
+      <button class="btn-ghost" id="ttModalCancelBtn" style="display:none;">Cancel</button>
+      <button class="btn-primary" id="ttModalOkBtn">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== WHATSAPP MESSAGE PREVIEW ===================== -->
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-header">
+    <button class="close-btn" id="previewBackTopBtn" aria-label="Back"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="preview-header-text"><strong>Preview Message</strong><span>How it will appear on WhatsApp</span></div>
+  </div>
+  <div class="preview-chat-bg">
+    <div class="preview-bubble" id="previewBubbleContent">
+      <span id="previewBubbleText"></span>
+      <span class="preview-meta"><span id="previewTime"></span> <i class="fa-solid fa-check-double"></i></span>
+    </div>
+  </div>
+  <div class="preview-actions">
+    <button class="btn-ghost" id="previewGoBackBtn"><i class="fa-solid fa-pen"></i> Go Back</button>
+    <button class="btn-send" id="previewConfirmBtn"><i class="fa-brands fa-whatsapp"></i> Confirm &amp; Send</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const LOGO_URL = 'logo.png';
+  const SCHOOL_NAME = 'Tobby Tabby Bilingual Nursery and Primary School';
+  const LOGO_CACHE_KEY = 'tobbyTabiLogoB64';
+  const DATA_KEY = 'tobbyTabiData';
+  const INSTALL_DISMISS_KEY = 'tobbyTabiInstallDismissedAt';
+
+  const DEFAULT_SUBJECTS = ['English Language','Mathematics','Science','French','Social Studies','ICT','Religious & Moral Education','Physical Education','Creative & Performing Arts','Reading'];
+  const ANNOUNCEMENTS = ['PTA meeting this Friday','School fees balance due soon','Bring sports wear on Wednesday','Public holiday — school closed Monday','End of term exams begin next week','Please cover and label all books','Uniform inspection this week','Field trip permission slips due'];
+
+  /* ---------- data model ---------- */
+  function loadData(){
+    const raw = localStorage.getItem(DATA_KEY);
+    if(raw){
+      try{
+        const parsed = JSON.parse(raw);
+        if(!parsed.announcements || !parsed.announcements.length) parsed.announcements = ANNOUNCEMENTS.slice();
+        if(!parsed.notifSettings) parsed.notifSettings = { individual:true, weekly:true };
+        if(!parsed.notifications) parsed.notifications = [];
+        if(!parsed.notifFired) parsed.notifFired = {};
+        if(!parsed.notifSnoozes) parsed.notifSnoozes = {};
+        if(!parsed.notifWeekKey) parsed.notifWeekKey = null;
+        if(!parsed.activityLog) parsed.activityLog = [];
+        return parsed;
+      }catch(e){}
+    }
+    return { onboarded:false, teacherName:'', className:'', subjects:[], students:[], announcements: ANNOUNCEMENTS.slice(),
+      notifSettings:{ individual:true, weekly:true }, notifications:[], notifFired:{}, notifSnoozes:{}, notifWeekKey:null, activityLog:[] };
+  }
+  function saveData(){ localStorage.setItem(DATA_KEY, JSON.stringify(data)); }
+  let data = loadData();
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function initials(name){
+    return String(name).trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  }
+  function formatToday(){
+    return new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  }
+
+  /* ---------- custom alert / confirm modal (replaces native alert/confirm) ---------- */
+  const ttAlertOverlay = document.getElementById('ttAlertOverlay');
+  const ttModalIcon = document.getElementById('ttModalIcon');
+  const ttModalTitle = document.getElementById('ttModalTitle');
+  const ttModalMessage = document.getElementById('ttModalMessage');
+  const ttModalCancelBtn = document.getElementById('ttModalCancelBtn');
+  const ttModalOkBtn = document.getElementById('ttModalOkBtn');
+
+  function showAlert(message, title){
+    return new Promise(resolve => {
+      ttModalIcon.className = 'tt-modal-icon info';
+      ttModalIcon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+      ttModalTitle.textContent = title || 'Heads up';
+      ttModalMessage.textContent = message;
+      ttModalCancelBtn.style.display = 'none';
+      ttModalOkBtn.textContent = 'Got it';
+      ttAlertOverlay.classList.add('open');
+      function onOk(){ ttAlertOverlay.classList.remove('open'); ttModalOkBtn.removeEventListener('click', onOk); resolve(true); }
+      ttModalOkBtn.addEventListener('click', onOk);
+    });
+  }
+  function showConfirm(message, title, opts){
+    opts = opts || {};
+    return new Promise(resolve => {
+      ttModalIcon.className = 'tt-modal-icon' + (opts.danger ? '' : ' info');
+      ttModalIcon.innerHTML = opts.danger ? '<i class="fa-solid fa-trash-can"></i>' : '<i class="fa-solid fa-circle-question"></i>';
+      ttModalTitle.textContent = title || 'Please confirm';
+      ttModalMessage.textContent = message;
+      ttModalCancelBtn.style.display = 'inline-flex';
+      ttModalOkBtn.textContent = opts.confirmText || 'Confirm';
+      ttModalCancelBtn.textContent = opts.cancelText || 'Cancel';
+      ttAlertOverlay.classList.add('open');
+      function cleanup(){ ttAlertOverlay.classList.remove('open'); ttModalOkBtn.removeEventListener('click', onOk); ttModalCancelBtn.removeEventListener('click', onCancel); }
+      function onOk(){ cleanup(); resolve(true); }
+      function onCancel(){ cleanup(); resolve(false); }
+      ttModalOkBtn.addEventListener('click', onOk);
+      ttModalCancelBtn.addEventListener('click', onCancel);
+    });
+  }
+
+  /* ---------- full-screen WhatsApp message preview ---------- */
+  const previewOverlay = document.getElementById('previewOverlay');
+  const previewBubbleText = document.getElementById('previewBubbleText');
+  const previewTime = document.getElementById('previewTime');
+  const previewConfirmBtn = document.getElementById('previewConfirmBtn');
+  let previewOnConfirm = null;
+
+  function waFormatToHtml(text){
+    let out = escapeHtml(text);
+    out = out.replace(/\*(.+?)\*/g, '<strong>$1</strong>');
+    out = out.replace(/_(.+?)_/g, '<em>$1</em>');
+    return out;
+  }
+  function openPreview(message, onConfirm){
+    previewBubbleText.innerHTML = waFormatToHtml(message);
+    previewTime.textContent = new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    previewOnConfirm = onConfirm;
+    previewOverlay.classList.add('open');
+  }
+  function closePreview(){ previewOverlay.classList.remove('open'); previewOnConfirm = null; }
+  document.getElementById('previewGoBackBtn').addEventListener('click', closePreview);
+  document.getElementById('previewBackTopBtn').addEventListener('click', closePreview);
+  previewConfirmBtn.addEventListener('click', () => {
+    const fn = previewOnConfirm;
+    closePreview();
+    if(fn) fn();
+  });
+
+  /* ---------- logo caching (Cloudinary) ---------- */
+  const logoTargets = () => document.querySelectorAll('.logo-target, #splashLogo, #topLogo, #installLogo');
+  function applyLogo(src){
+    logoTargets().forEach(el => { el.src = src; });
+  }
+  function cacheLogo(){
+    const cached = localStorage.getItem(LOGO_CACHE_KEY);
+    if(cached){ applyLogo(cached); }
+    else{ applyLogo(LOGO_URL); }
+    fetch(LOGO_URL).then(r => r.blob()).then(blob => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        try{
+          localStorage.setItem(LOGO_CACHE_KEY, reader.result);
+          if(!cached) applyLogo(reader.result);
+        }catch(e){ /* storage full or blocked - ignore, network image already showing */ }
+      };
+      reader.readAsDataURL(blob);
+    }).catch(() => { applyLogo(LOGO_URL); });
+  }
+
+  /* ---------- screens ---------- */
+  const splashScreen = document.getElementById('splashScreen');
+  const onboardingScreen = document.getElementById('onboardingScreen');
+  const successScreen = document.getElementById('successScreen');
+  const mainApp = document.getElementById('mainApp');
+
+  function showOnly(el){
+    [splashScreen, onboardingScreen, successScreen, mainApp].forEach(s => {
+      if(s === el){ s.classList.add('active'); } else { s.classList.remove('active'); }
+    });
+  }
+
+  function boot(){
+    cacheLogo();
+    setTimeout(() => {
+      splashScreen.style.display = 'none';
+      if(data.onboarded){
+        renderMainMeta();
+        showOnly(mainApp);
+        renderDashboard(); renderStudents(); initWeeklyView();
+        initNotifications();
+        maybeShowInstallModal(1200);
+        setTimeout(maybeShowNotifPermModal, 2400);
+      } else {
+        showOnly(onboardingScreen);
+      }
+    }, 1600);
+  }
+
+  /* ---------- onboarding ---------- */
+  let obStep = 1;
+  let obSubjects = [];
+  const obTeacherName = document.getElementById('obTeacherName');
+  const obClassName = document.getElementById('obClassName');
+  const obSubjectGrid = document.getElementById('obSubjectGrid');
+  const obAddSubjectRow = document.getElementById('obAddSubjectRow');
+  const obNewSubjectInput = document.getElementById('obNewSubjectInput');
+  const obNextBtn = document.getElementById('obNextBtn');
+  const obBackBtn = document.getElementById('obBackBtn');
+
+  function renderObSubjectGrid(){
+    obSubjectGrid.innerHTML = DEFAULT_SUBJECTS.map(s => `
+      <div class="ob-chip${obSubjects.includes(s)?' selected':''}" data-subject="${escapeHtml(s)}">${escapeHtml(s)}</div>
+    `).join('') + `<div class="ob-chip add-chip" id="obAddChip"><i class="fa-solid fa-plus"></i> Add subject</div>`;
+
+    obSubjectGrid.querySelectorAll('.ob-chip[data-subject]').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const s = chip.getAttribute('data-subject');
+        if(obSubjects.includes(s)){ obSubjects = obSubjects.filter(x => x !== s); }
+        else{ obSubjects.push(s); }
+        renderObSubjectGrid();
+      });
+    });
+    document.getElementById('obAddChip').addEventListener('click', () => {
+      obAddSubjectRow.style.display = 'flex';
+      obNewSubjectInput.focus();
+    });
+  }
+
+  document.getElementById('obAddSubjectBtn').addEventListener('click', () => {
+    const val = obNewSubjectInput.value.trim();
+    if(val && !obSubjects.includes(val)){
+      obSubjects.push(val);
+      if(!DEFAULT_SUBJECTS.includes(val)) DEFAULT_SUBJECTS.push(val);
+    }
+    obNewSubjectInput.value = '';
+    obAddSubjectRow.style.display = 'none';
+    renderObSubjectGrid();
+  });
+
+  function goToObStep(n){
+    obStep = n;
+    document.querySelectorAll('.ob-step').forEach(s => s.classList.toggle('active', +s.getAttribute('data-step') === n));
+    document.querySelectorAll('.ob-dot').forEach(d => d.classList.toggle('done', +d.getAttribute('data-step') <= n));
+    obBackBtn.style.visibility = n === 1 ? 'hidden' : 'visible';
+    obNextBtn.innerHTML = n === 3 ? 'Finish Setup <i class="fa-solid fa-check"></i>' : 'Continue <i class="fa-solid fa-arrow-right"></i>';
+    if(n === 3) renderObSubjectGrid();
+  }
+
+  obBackBtn.addEventListener('click', () => { if(obStep > 1) goToObStep(obStep - 1); });
+
+  obNextBtn.addEventListener('click', () => {
+    if(obStep === 1){
+      if(!obTeacherName.value.trim()){ obTeacherName.focus(); obTeacherName.style.borderColor = 'var(--danger)'; return; }
+      goToObStep(2);
+    } else if(obStep === 2){
+      if(!obClassName.value.trim()){ obClassName.focus(); obClassName.style.borderColor = 'var(--danger)'; return; }
+      goToObStep(3);
+    } else {
+      data.teacherName = obTeacherName.value.trim();
+      data.className = obClassName.value.trim();
+      data.subjects = obSubjects.length ? obSubjects.slice() : DEFAULT_SUBJECTS.slice(0,4);
+      data.onboarded = true;
+      data.students = data.students || [];
+      saveData();
+      document.getElementById('successTeacherName').textContent = data.teacherName;
+      document.getElementById('successClassName').textContent = data.className;
+      showOnly(successScreen);
+    }
+  });
+
+  document.getElementById('successContinueBtn').addEventListener('click', () => {
+    renderMainMeta();
+    showOnly(mainApp);
+    renderDashboard(); renderStudents(); initWeeklyView();
+    initNotifications();
+    maybeShowInstallModal(500);
+    setTimeout(maybeShowNotifPermModal, 1500);
+  });
+
+  /* ---------- install modal (PWA) ---------- */
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+  window.addEventListener('appinstalled', () => {
+    localStorage.setItem(INSTALL_DISMISS_KEY, 'installed');
+  });
+
+  function isIos(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+  function isStandalone(){
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+
+  const installOverlay = document.getElementById('installOverlay');
+  const installSteps = document.getElementById('installSteps');
+  const installNowBtn = document.getElementById('installNowBtn');
+
+  function openInstallModal(){
+    if(isIos() && !deferredPrompt){
+      installSteps.classList.add('show');
+      installSteps.innerHTML = `
+        <div><i class="fa-solid fa-arrow-up-from-bracket"></i> Tap the Share icon in Safari</div>
+        <div><i class="fa-solid fa-square-plus"></i> Choose "Add to Home Screen"</div>
+        <div><i class="fa-solid fa-check"></i> Tap "Add" to confirm</div>`;
+      installNowBtn.style.display = 'none';
+    } else {
+      installSteps.classList.remove('show');
+      installNowBtn.style.display = 'flex';
+    }
+    installOverlay.classList.add('open');
+  }
+  function closeInstallModal(){ installOverlay.classList.remove('open'); }
+
+  function maybeShowInstallModal(delay){
+    if(isStandalone()) return;
+    const dismissed = localStorage.getItem(INSTALL_DISMISS_KEY);
+    if(dismissed === 'installed') return;
+    if(dismissed){
+      const last = parseInt(dismissed, 10);
+      if(!isNaN(last) && (Date.now() - last) < 3*24*60*60*1000) return;
+    }
+    setTimeout(openInstallModal, delay);
+  }
+
+  installNowBtn.addEventListener('click', async () => {
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if(choice.outcome === 'accepted'){ localStorage.setItem(INSTALL_DISMISS_KEY, 'installed'); }
+      closeInstallModal();
+    } else {
+      openInstallModal();
+    }
+  });
+  document.getElementById('installLaterBtn').addEventListener('click', () => {
+    localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now()));
+    closeInstallModal();
+  });
+  document.getElementById('installRow').addEventListener('click', () => { closeSettings(); openInstallModal(); });
+
+  /* ---------- main app meta ---------- */
+  function renderMainMeta(){
+    document.getElementById('topBarMeta').textContent = `${data.className} · ${data.teacherName}`;
+    document.getElementById('settingsTeacherName').textContent = data.teacherName;
+    document.getElementById('settingsClassName').textContent = data.className;
+    const avatarEl = document.getElementById('profileAvatarInitials');
+    const nameEl = document.getElementById('profileFooterName');
+    if(avatarEl) avatarEl.textContent = data.teacherName ? initials(data.teacherName) : 'TT';
+    if(nameEl) nameEl.textContent = data.teacherName || 'Teacher';
+  }
+
+  /* ---------- settings & edit profile ---------- */
+  const settingsOverlay = document.getElementById('settingsOverlay');
+  document.getElementById('settingsBtn').addEventListener('click', () => settingsOverlay.classList.add('open'));
+  document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
+  settingsOverlay.addEventListener('click', e => { if(e.target === settingsOverlay) closeSettings(); });
+  function closeSettings(){ settingsOverlay.classList.remove('open'); }
+
+  const editProfileOverlay = document.getElementById('editProfileOverlay');
+  const editTeacherName = document.getElementById('editTeacherName');
+  const editClassName = document.getElementById('editClassName');
+  const editSubjectGrid = document.getElementById('editSubjectGrid');
+  let editSubjects = [];
+
+  function renderEditSubjectGrid(){
+    editSubjectGrid.innerHTML = editSubjects.map(s => `
+      <div class="ob-chip selected" data-subject="${escapeHtml(s)}">${escapeHtml(s)} <i class="fa-solid fa-xmark" style="font-size:10px;"></i></div>
+    `).join('');
+    editSubjectGrid.querySelectorAll('.ob-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        editSubjects = editSubjects.filter(s => s !== chip.getAttribute('data-subject'));
+        renderEditSubjectGrid();
+      });
+    });
+  }
+  document.getElementById('editAddSubjectBtn').addEventListener('click', () => {
+    const inp = document.getElementById('editNewSubjectInput');
+    const val = inp.value.trim();
+    if(val && !editSubjects.includes(val)) editSubjects.push(val);
+    inp.value = '';
+    renderEditSubjectGrid();
+  });
+
+  document.getElementById('editProfileRow').addEventListener('click', () => {
+    editTeacherName.value = data.teacherName;
+    editClassName.value = data.className;
+    editSubjects = data.subjects.slice();
+    renderEditSubjectGrid();
+    closeSettings();
+    editProfileOverlay.classList.add('open');
+  });
+  document.getElementById('closeEditProfileBtn').addEventListener('click', () => editProfileOverlay.classList.remove('open'));
+  editProfileOverlay.addEventListener('click', e => { if(e.target === editProfileOverlay) editProfileOverlay.classList.remove('open'); });
+
+  document.getElementById('editProfileForm').addEventListener('submit', e => {
+    e.preventDefault();
+    data.teacherName = editTeacherName.value.trim() || data.teacherName;
+    data.className = editClassName.value.trim() || data.className;
+    data.subjects = editSubjects.length ? editSubjects.slice() : data.subjects;
+    saveData();
+    renderMainMeta();
+    initWeeklyView();
+    editProfileOverlay.classList.remove('open');
+  });
+
+  /* ---------- add student ---------- */
+  const addStudentOverlay = document.getElementById('addStudentOverlay');
+  const addStudentForm = document.getElementById('addStudentForm');
+  const newStudentPhotoPreview = document.getElementById('newStudentPhotoPreview');
+  const cameraInput = document.getElementById('cameraInput');
+  const galleryInput = document.getElementById('galleryInput');
+  let pendingPhoto = null;
+
+  document.getElementById('fabAddStudent').addEventListener('click', () => {
+    addStudentForm.reset();
+    pendingPhoto = null;
+    newStudentPhotoPreview.innerHTML = '<i class="fa-solid fa-camera"></i>';
+    addStudentOverlay.classList.add('open');
+  });
+  document.getElementById('closeAddStudentBtn').addEventListener('click', () => addStudentOverlay.classList.remove('open'));
+  addStudentOverlay.addEventListener('click', e => { if(e.target === addStudentOverlay) addStudentOverlay.classList.remove('open'); });
+
+  document.getElementById('takePhotoBtn').addEventListener('click', () => cameraInput.click());
+  document.getElementById('choosePhotoBtn').addEventListener('click', () => galleryInput.click());
+
+  function handlePhotoFile(file){
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      pendingPhoto = reader.result;
+      newStudentPhotoPreview.innerHTML = `<img src="${pendingPhoto}" alt="Photo">`;
+    };
+    reader.readAsDataURL(file);
+  }
+  cameraInput.addEventListener('change', e => handlePhotoFile(e.target.files[0]));
+  galleryInput.addEventListener('change', e => handlePhotoFile(e.target.files[0]));
+
+  addStudentForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('newStudentName').value.trim();
+    const phoneRaw = document.getElementById('newStudentPhone').value.trim().replace(/[^\d]/g,'');
+    if(!name || !phoneRaw){ return; }
+    const student = {
+      id: 's' + Date.now(),
+      name: name,
+      phone: '+237' + phoneRaw,
+      photo: pendingPhoto,
+      updated: false,
+      lastUpdate: null
+    };
+    data.students.push(student);
+    saveData();
+    addStudentOverlay.classList.remove('open');
+    renderDashboard(); renderStudents();
+  });
+
+  /* ---------- dashboard / student list ---------- */
+  const studentListEl = document.getElementById('studentList');
+  const statTotal = document.getElementById('statTotal');
+  const statDone = document.getElementById('statDone');
+  const statPending = document.getElementById('statPending');
+
+  function renderDashboard(){
+    const total = data.students.length;
+    const done = data.students.filter(s => s.updated).length;
+    statTotal.textContent = total;
+    statDone.textContent = done;
+    statPending.textContent = total - done;
+  }
+
+  function renderStudents(){
+    if(!data.students.length){
+      studentListEl.innerHTML = `
+        <div class="empty-state">
+          <i class="fa-solid fa-users"></i>
+          <h3>No students yet</h3>
+          <p>Tap the green WhatsApp button below to add your first student and start sending progress updates.</p>
+        </div>`;
+      return;
+    }
+    studentListEl.innerHTML = data.students.map(s => `
+      <div class="student-card ${s.updated ? 'done' : ''}">
+        ${s.photo ? `<img class="student-avatar" src="${s.photo}" alt="${escapeHtml(s.name)}">` : `<div class="student-avatar">${escapeHtml(initials(s.name))}</div>`}
+        <div class="student-info">
+          <h3>${escapeHtml(s.name)}</h3>
+          <div class="meta"><i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> ${escapeHtml(s.phone)}</div>
+          <span class="status-pill ${s.updated ? 'done' : 'pending'}">${s.updated ? 'Update Sent' : 'Pending Update'}</span>
+        </div>
+        <div class="student-actions">
+          <button class="btn-update" data-id="${s.id}">Update</button>
+          <button class="icon-link" data-del="${s.id}" aria-label="Remove"><i class="fa-regular fa-trash-can"></i></button>
+        </div>
+      </div>
+    `).join('');
+
+    studentListEl.querySelectorAll('.btn-update').forEach(btn => btn.addEventListener('click', () => openForm(btn.getAttribute('data-id'))));
+    studentListEl.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', async () => {
+      const id = btn.getAttribute('data-del');
+      const student = data.students.find(s => s.id === id);
+      if(!student) return;
+      const ok = await showConfirm(`Remove ${student.name} from your list? This can't be undone.`, 'Remove student', { confirmText:'Remove', cancelText:'Cancel', danger:true });
+      if(ok){
+        data.students = data.students.filter(s => s.id !== id);
+        saveData();
+        renderDashboard(); renderStudents(); initWeeklyView();
+      }
+    }));
+  }
+
+  /* ---------- tabs ---------- */
+  const tabIndividualBtn = document.getElementById('tabIndividualBtn');
+  const tabWeeklyBtn = document.getElementById('tabWeeklyBtn');
+  const individualView = document.getElementById('individualView');
+  const weeklyView = document.getElementById('weeklyView');
+  tabIndividualBtn.addEventListener('click', () => switchTab('individual'));
+  tabWeeklyBtn.addEventListener('click', () => switchTab('weekly'));
+  function switchTab(tab){
+    const isIndividual = tab === 'individual';
+    tabIndividualBtn.classList.toggle('active', isIndividual);
+    tabWeeklyBtn.classList.toggle('active', !isIndividual);
+    individualView.classList.toggle('active', isIndividual);
+    weeklyView.classList.toggle('active', !isIndividual);
+  }
+
+  /* ---------- progress update sheet ---------- */
+  const overlay = document.getElementById('overlay');
+  const closeBtn = document.getElementById('closeBtn');
+  const formStudentName = document.getElementById('formStudentName');
+  const progressForm = document.getElementById('progressForm');
+  let activeStudentId = null;
+  let selections = { academic:null, behaviour:null, attendance:null };
+
+  function openForm(id){
+    activeStudentId = id;
+    const student = data.students.find(s => s.id === id);
+    formStudentName.textContent = `${student.name} · ${data.className}`;
+    selections = { academic:null, behaviour:null, attendance:null };
+    document.querySelectorAll('.option-chip').forEach(c => c.classList.remove('selected'));
+    ['strengthInput','improveInput','messageInput','attendanceRateInput','positionInput'].forEach(id => document.getElementById(id).value = '');
+    overlay.classList.add('open');
+  }
+  function closeForm(){ overlay.classList.remove('open'); activeStudentId = null; }
+  closeBtn.addEventListener('click', closeForm);
+  overlay.addEventListener('click', e => { if(e.target === overlay) closeForm(); });
+
+  document.querySelectorAll('.option-group').forEach(group => {
+    const groupName = group.getAttribute('data-group');
+    group.querySelectorAll('.option-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        group.querySelectorAll('.option-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        selections[groupName] = chip.getAttribute('data-value');
+      });
+    });
+  });
+
+  function buildMessage(student, d){
+    const lines = [];
+    lines.push(`🏫 *${SCHOOL_NAME.toUpperCase()}*`);
+    lines.push('_Child Progress Report — ' + d.date + '_');
+    lines.push('');
+    lines.push('Dear Parent/Guardian,');
+    lines.push('');
+    lines.push(`Below is a progress update for *${student.name}* (${data.className}).`);
+    lines.push('');
+    lines.push('*Academic Progress:* ' + d.academic);
+    lines.push('*Behaviour:* ' + d.behaviour);
+    lines.push('*Attendance:* ' + d.attendance + (d.attendanceRate ? ' (' + d.attendanceRate + ')' : ''));
+    if(d.position) lines.push('*Class Position:* ' + d.position);
+    lines.push('');
+    lines.push('*Strength:* ' + d.strength);
+    lines.push('*Area for Improvement:* ' + d.improve);
+    lines.push('');
+    lines.push("*Teacher's Comment:*");
+    lines.push(d.message);
+    lines.push('');
+    lines.push("Thank you for your continued partnership in your child's education.");
+    lines.push('');
+    lines.push('Kind regards,');
+    lines.push(d.teacherName || 'Class Teacher');
+    return lines.join('\n');
+  }
+
+  progressForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    if(!activeStudentId) return;
+    if(!selections.academic || !selections.behaviour || !selections.attendance){
+      await showAlert('Please select Academic Progress, Behaviour, and Attendance before sending.', 'Missing information');
+      return;
+    }
+    const strength = document.getElementById('strengthInput').value.trim() || 'Consistent effort in class';
+    const improve = document.getElementById('improveInput').value.trim() || 'Continued practice at home';
+    const message = document.getElementById('messageInput').value.trim() || 'Your child is making good progress. We appreciate your continued support at home.';
+    const attendanceRate = document.getElementById('attendanceRateInput').value.trim();
+    const position = document.getElementById('positionInput').value.trim();
+    const student = data.students.find(s => s.id === activeStudentId);
+
+    const fullMessage = buildMessage(student, {
+      academic: selections.academic, behaviour: selections.behaviour, attendance: selections.attendance,
+      attendanceRate, position, strength, improve, message, teacherName: data.teacherName, date: formatToday()
+    });
+    const cleanPhone = student.phone.replace(/[^\d]/g,'');
+    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(fullMessage)}`;
+
+    openPreview(fullMessage, () => {
+      student.updated = true;
+      student.lastUpdate = new Date().toISOString();
+      logActivity('individual', student.name);
+      saveData();
+      renderDashboard(); renderStudents(); closeForm();
+      window.open(waUrl, '_blank');
+    });
+  });
+
+  /* ---------- weekly update ---------- */
+  const WEEKLY_KEY = 'tobbyTabiWeeklyLastSent';
+  const subjectChipGrid = document.getElementById('subjectChipGrid');
+  const subjectTopicList = document.getElementById('subjectTopicList');
+  const announceChipGrid = document.getElementById('announceChipGrid');
+  const weeklyNotesInput = document.getElementById('weeklyNotesInput');
+  const weeklySendBtn = document.getElementById('weeklySendBtn');
+  const weeklyCopyBtn = document.getElementById('weeklyCopyBtn');
+  let selectedSubjects = [];
+
+  function nextFridayLabel(){
+    const d = new Date();
+    const diff = (5 - d.getDay() + 7) % 7;
+    d.setDate(d.getDate() + diff);
+    return d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  }
+
+  function renderSubjectChips(){
+    const subs = data.subjects && data.subjects.length ? data.subjects : DEFAULT_SUBJECTS;
+    subjectChipGrid.innerHTML = subs.map(subj => `<div class="subject-chip" data-subject="${escapeHtml(subj)}">${escapeHtml(subj)}</div>`).join('');
+    subjectChipGrid.querySelectorAll('.subject-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const subj = chip.getAttribute('data-subject');
+        if(selectedSubjects.includes(subj)){ selectedSubjects = selectedSubjects.filter(s => s !== subj); chip.classList.remove('selected'); }
+        else{ selectedSubjects.push(subj); chip.classList.add('selected'); }
+        renderSubjectTopicInputs();
+      });
+    });
+  }
+  function renderSubjectTopicInputs(){
+    const existing = {};
+    subjectTopicList.querySelectorAll('.subject-topic-item').forEach(item => { existing[item.getAttribute('data-subject')] = item.querySelector('input').value; });
+    subjectTopicList.innerHTML = selectedSubjects.map(subj => `
+      <div class="subject-topic-item" data-subject="${escapeHtml(subj)}">
+        <label>${escapeHtml(subj)} — Topic(s) Covered</label>
+        <input type="text" placeholder="e.g. Addition and subtraction of fractions" value="${escapeHtml(existing[subj] || '')}">
+      </div>`).join('');
+  }
+  function renderAnnounceChips(){
+    const list = data.announcements && data.announcements.length ? data.announcements : ANNOUNCEMENTS;
+    announceChipGrid.innerHTML = list.map((text, idx) => `
+      <div class="announce-chip" data-idx="${idx}">
+        <span class="announce-text" data-text="${escapeHtml(text)}">+ ${escapeHtml(text)}</span>
+        <button type="button" class="announce-edit" data-edit="${idx}" aria-label="Edit"><i class="fa-solid fa-pencil"></i></button>
+      </div>`).join('');
+    announceChipGrid.querySelectorAll('.announce-text').forEach(el => {
+      el.addEventListener('click', () => {
+        const text = el.getAttribute('data-text');
+        const current = weeklyNotesInput.value;
+        if(current.includes(text)) return;
+        weeklyNotesInput.value = current ? current + '\n- ' + text : '- ' + text;
+        el.closest('.announce-chip').classList.add('used');
+      });
+    });
+    announceChipGrid.querySelectorAll('.announce-edit').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openAnnouncementSheet(parseInt(btn.getAttribute('data-edit'), 10));
+      });
+    });
+  }
+
+  /* ---------- add / edit / delete announcement (persistent) ---------- */
+  const editAnnouncementOverlay = document.getElementById('editAnnouncementOverlay');
+  const announcementForm = document.getElementById('announcementForm');
+  const announcementTextInput = document.getElementById('announcementTextInput');
+  const announceSheetTitle = document.getElementById('announceSheetTitle');
+  const deleteAnnouncementBtn = document.getElementById('deleteAnnouncementBtn');
+  let editingAnnouncementIndex = null;
+
+  function openAnnouncementSheet(idx){
+    editingAnnouncementIndex = (typeof idx === 'number') ? idx : null;
+    if(editingAnnouncementIndex !== null){
+      announceSheetTitle.textContent = 'Edit Announcement';
+      announcementTextInput.value = data.announcements[editingAnnouncementIndex];
+      deleteAnnouncementBtn.style.display = 'block';
+    } else {
+      announceSheetTitle.textContent = 'Add Announcement';
+      announcementTextInput.value = '';
+      deleteAnnouncementBtn.style.display = 'none';
+    }
+    editAnnouncementOverlay.classList.add('open');
+    setTimeout(() => announcementTextInput.focus(), 150);
+  }
+  function closeAnnouncementSheet(){ editAnnouncementOverlay.classList.remove('open'); editingAnnouncementIndex = null; }
+
+  document.getElementById('openAddAnnouncementBtn').addEventListener('click', () => openAnnouncementSheet(null));
+  document.getElementById('closeAnnouncementBtn').addEventListener('click', closeAnnouncementSheet);
+  editAnnouncementOverlay.addEventListener('click', e => { if(e.target === editAnnouncementOverlay) closeAnnouncementSheet(); });
+
+  announcementForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const text = announcementTextInput.value.trim();
+    if(!text) return;
+    if(!data.announcements) data.announcements = [];
+    if(editingAnnouncementIndex !== null){ data.announcements[editingAnnouncementIndex] = text; }
+    else { data.announcements.push(text); }
+    saveData();
+    renderAnnounceChips();
+    closeAnnouncementSheet();
+  });
+  deleteAnnouncementBtn.addEventListener('click', () => {
+    if(editingAnnouncementIndex === null) return;
+    data.announcements.splice(editingAnnouncementIndex, 1);
+    saveData();
+    renderAnnounceChips();
+    closeAnnouncementSheet();
+  });
+
+  document.getElementById('openSubjectManagerBtn').addEventListener('click', () => {
+    editTeacherName.value = data.teacherName;
+    editClassName.value = data.className;
+    editSubjects = data.subjects.slice();
+    renderEditSubjectGrid();
+    editProfileOverlay.classList.add('open');
+  });
+  function updateLastSentBadge(){
+    const record = JSON.parse(localStorage.getItem(WEEKLY_KEY) || '{}');
+    const badge = document.getElementById('lastSentBadge');
+    if(record[data.className]){
+      const d = new Date(record[data.className]);
+      badge.innerHTML = `Last weekly update for <strong>${escapeHtml(data.className)}</strong>: ${d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
+    } else {
+      badge.innerHTML = `No weekly update sent yet for <strong>${escapeHtml(data.className)}</strong>.`;
+    }
+  }
+  function markWeeklySent(){
+    const record = JSON.parse(localStorage.getItem(WEEKLY_KEY) || '{}');
+    record[data.className] = new Date().toISOString();
+    localStorage.setItem(WEEKLY_KEY, JSON.stringify(record));
+  }
+  function buildWeeklyMessage(){
+    const weekEnding = nextFridayLabel();
+    const lines = [];
+    lines.push(`🏫 *${SCHOOL_NAME.toUpperCase()}*`);
+    lines.push(`_Weekly Class Update — ${data.className} — Week Ending ${weekEnding}_`);
+    lines.push('');
+    lines.push('Dear Parents/Guardians,');
+    lines.push('');
+    lines.push("Here is a summary of this week's learning and important information.");
+    const topicItems = subjectTopicList.querySelectorAll('.subject-topic-item');
+    if(topicItems.length){
+      lines.push(''); lines.push("*This Week's Learning:*");
+      topicItems.forEach(item => {
+        const subj = item.getAttribute('data-subject');
+        const topic = item.querySelector('input').value.trim();
+        if(topic) lines.push(`*${subj}:* ${topic}`);
+      });
+    }
+    const notes = weeklyNotesInput.value.trim();
+    if(notes){ lines.push(''); lines.push('*Announcements & Reminders:*'); lines.push(notes); }
+    lines.push('');
+    lines.push("Thank you for your continued partnership in your child's education.");
+    lines.push('');
+    lines.push('Kind regards,');
+    lines.push(data.teacherName || 'Class Teacher');
+    return lines.join('\n');
+  }
+  function validateTopics(){
+    const missing = [];
+    subjectTopicList.querySelectorAll('.subject-topic-item').forEach(item => {
+      if(!item.querySelector('input').value.trim()) missing.push(item.getAttribute('data-subject'));
+    });
+    return missing;
+  }
+  weeklySendBtn.addEventListener('click', async () => {
+    if(selectedSubjects.length === 0 && !weeklyNotesInput.value.trim()){
+      await showAlert('Please select at least one subject or add an announcement before sending.', 'Nothing to send yet');
+      return;
+    }
+    const missing = validateTopics();
+    if(missing.length){
+      await showAlert('Please enter a topic for: ' + missing.join(', ') + '\n\nOr tap the subject again to remove it.', 'Missing topics');
+      return;
+    }
+    const message = buildWeeklyMessage();
+    openPreview(message, () => {
+      markWeeklySent(); updateLastSentBadge();
+      logActivity('weekly', data.className);
+      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+    });
+  });
+  weeklyCopyBtn.addEventListener('click', async () => {
+    const missing = validateTopics();
+    if(missing.length){
+      await showAlert('Please enter a topic for: ' + missing.join(', ') + '\n\nOr tap the subject again to remove it.', 'Missing topics');
+      return;
+    }
+    navigator.clipboard.writeText(buildWeeklyMessage()).then(() => {
+      weeklyCopyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+      setTimeout(() => { weeklyCopyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy Message Instead'; }, 1600);
+    }).catch(() => showAlert('Could not copy automatically — please select and copy the text manually.', 'Copy failed'));
+  });
+  function initWeeklyView(){
+    selectedSubjects = [];
+    renderSubjectChips(); renderSubjectTopicInputs(); renderAnnounceChips(); updateLastSentBadge();
+  }
+
+  /* ================= NOTIFICATIONS ================= */
+  const notifOverlay = document.getElementById('notifOverlay');
+  const notifBadge = document.getElementById('notifBadge');
+  const notifListEl = document.getElementById('notifList');
+  const notifPermOverlay = document.getElementById('notifPermOverlay');
+  const notifStatusSub = document.getElementById('notifStatusSub');
+  const toggleIndividualReminders = document.getElementById('toggleIndividualReminders');
+  const toggleWeeklyReminders = document.getElementById('toggleWeeklyReminders');
+  const NOTIF_DISMISS_KEY = 'tobbyTabiNotifPermDismissedAt';
+
+  function timeAgo(ts){
+    const mins = Math.round((Date.now() - ts) / 60000);
+    if(mins < 1) return 'just now';
+    if(mins < 60) return mins + 'm ago';
+    const hrs = Math.round(mins / 60);
+    if(hrs < 24) return hrs + 'h ago';
+    return Math.round(hrs / 24) + 'd ago';
+  }
+
+  function renderNotifBadge(){
+    const unread = data.notifications.filter(n => !n.read).length;
+    if(unread > 0){ notifBadge.textContent = unread > 9 ? '9+' : String(unread); notifBadge.classList.remove('hidden'); }
+    else{ notifBadge.classList.add('hidden'); }
+  }
+
+  function renderNotifList(){
+    if(!data.notifications.length){
+      notifListEl.innerHTML = `
+        <div class="notif-empty">
+          <i class="fa-regular fa-bell-slash"></i>
+          <h3 style="color:var(--navy-deep);font-size:15px;margin:0 0 6px;">No notifications yet</h3>
+          <p style="font-size:12.5px;margin:0;">Deadline reminders will show up here.</p>
+        </div>`;
+      return;
+    }
+    notifListEl.innerHTML = data.notifications.map(n => `
+      <div class="notif-item ${n.read ? '' : 'unread'}" data-id="${n.id}">
+        <div class="notif-ico"><i class="fa-solid ${n.type === 'weekly' ? 'fa-calendar-week' : (n.type === 'system' ? 'fa-circle-info' : 'fa-user-graduate')}"></i></div>
+        <div class="notif-body">
+          <p class="notif-title">${escapeHtml(n.title)}</p>
+          <p class="notif-msg">${escapeHtml(n.body)}</p>
+          <span class="notif-time">${timeAgo(n.ts)}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  document.getElementById('notifBellBtn').addEventListener('click', () => {
+    renderNotifList();
+    notifOverlay.classList.add('open');
+  });
+  document.getElementById('closeNotifBtn').addEventListener('click', () => notifOverlay.classList.remove('open'));
+  notifOverlay.addEventListener('click', e => { if(e.target === notifOverlay) notifOverlay.classList.remove('open'); });
+  document.getElementById('markAllReadBtn').addEventListener('click', () => {
+    if(!data.notifications.length) return;
+    data.notifications.forEach(n => n.read = true);
+    saveData(); renderNotifBadge(); renderNotifList();
+  });
+  document.getElementById('clearAllNotifsBtn').addEventListener('click', async () => {
+    if(!data.notifications.length) return;
+    const ok = await showConfirm("Remove all notifications? This can't be undone.", 'Clear notifications', { confirmText:'Clear all', cancelText:'Cancel', danger:true });
+    if(ok){ data.notifications = []; saveData(); renderNotifBadge(); renderNotifList(); }
+  });
+
+  function showOsNotification(type, title, body){
+    if(!('Notification' in window) || Notification.permission !== 'granted') return;
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.ready.then(reg => {
+        if(reg.active) reg.active.postMessage({ type:'tt-show-notification', title, body, tag:'tt-' + type, reminderType: type });
+      }).catch(() => {});
+    } else {
+      try{ new Notification(title, { body, icon:'logo.png' }); }catch(e){}
+    }
+  }
+
+  function addNotification(type, title, body){
+    data.notifications.unshift({ id:'n' + Date.now() + Math.random().toString(36).slice(2,6), type, title, body, ts:Date.now(), read:false });
+    if(data.notifications.length > 10) data.notifications.length = 10;
+    saveData();
+    renderNotifBadge();
+    if(notifOverlay.classList.contains('open')) renderNotifList();
+    showOsNotification(type, title, body);
+  }
+
+  /* ---------- permission modal ---------- */
+  function updateNotifStatusRow(){
+    if(!('Notification' in window)){ notifStatusSub.textContent = 'Not supported on this device'; return; }
+    if(Notification.permission === 'granted') notifStatusSub.textContent = 'Enabled';
+    else if(Notification.permission === 'denied') notifStatusSub.textContent = 'Blocked — enable in phone/browser settings';
+    else notifStatusSub.textContent = 'Not enabled — tap to allow';
+  }
+  function maybeShowNotifPermModal(){
+    if(!('Notification' in window) || Notification.permission !== 'default') { updateNotifStatusRow(); return; }
+    const dismissed = localStorage.getItem(NOTIF_DISMISS_KEY);
+    if(dismissed){
+      const last = parseInt(dismissed, 10);
+      if(!isNaN(last) && (Date.now() - last) < 3 * 24 * 60 * 60 * 1000){ updateNotifStatusRow(); return; }
+    }
+    notifPermOverlay.classList.add('open');
+    updateNotifStatusRow();
+  }
+  document.getElementById('notifEnableBtn').addEventListener('click', async () => {
+    try{
+      const perm = await Notification.requestPermission();
+      if(perm === 'granted'){ addNotification('system', 'Notifications enabled', "You'll now get reminders before each Friday deadline."); }
+    }catch(e){}
+    notifPermOverlay.classList.remove('open');
+    updateNotifStatusRow();
+  });
+  document.getElementById('notifLaterBtn').addEventListener('click', () => {
+    localStorage.setItem(NOTIF_DISMISS_KEY, String(Date.now()));
+    notifPermOverlay.classList.remove('open');
+  });
+  document.getElementById('notifStatusRow').addEventListener('click', async () => {
+    if(!('Notification' in window)) return;
+    if(Notification.permission === 'default'){ closeSettings(); notifPermOverlay.classList.add('open'); }
+    else{
+      await showAlert(Notification.permission === 'granted'
+        ? 'Notifications are already enabled for Tobby Tabi.'
+        : 'Notifications are blocked. Enable them from your phone or browser settings, then reopen Tobby Tabi.', 'Notifications');
+    }
+  });
+
+  /* ---------- toggles ---------- */
+  toggleIndividualReminders.addEventListener('change', () => { data.notifSettings.individual = toggleIndividualReminders.checked; saveData(); });
+  toggleWeeklyReminders.addEventListener('change', () => { data.notifSettings.weekly = toggleWeeklyReminders.checked; saveData(); });
+
+  /* ---------- weekly deadline engine ---------- */
+  // Deadline: every Friday 11:59:59 PM, for both the individual student
+  // progress updates and the weekly class update. Reminders fire a day
+  // before, a few hours before, and 1 hour before - only while there is
+  // still pending work and only if the person hasn't snoozed that stream.
+  function fridayDeadline(now){
+    const d = new Date(now);
+    const diff = (5 - d.getDay() + 7) % 7;
+    d.setDate(d.getDate() + diff);
+    d.setHours(23,59,59,999);
+    return d;
+  }
+  function cycleStartFor(deadline){
+    const d = new Date(deadline);
+    d.setDate(d.getDate() - 6);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+  function weekKeyFor(deadline){ return deadline.toISOString().slice(0,10); }
+
+  function rolloverCheck(){
+    const key = weekKeyFor(fridayDeadline(new Date()));
+    if(data.notifWeekKey !== key){
+      if(data.notifWeekKey !== null){
+        // A new weekly cycle has started - whatever wasn't sent last week
+        // doesn't carry over; student progress starts pending again.
+        data.students.forEach(s => { s.updated = false; });
+        renderDashboard(); renderStudents();
+      }
+      data.notifWeekKey = key;
+      data.notifFired = {};
+      data.notifSnoozes = {};
+      saveData();
+    }
+  }
+
+  function weeklyLastSentMs(){
+    try{
+      const record = JSON.parse(localStorage.getItem(WEEKLY_KEY) || '{}');
+      if(record[data.className]) return new Date(record[data.className]).getTime();
+    }catch(e){}
+    return null;
+  }
+
+  function fireStreamReminder(stream, whenLabel, cycleStart, fireKey){
+    data.notifFired[fireKey] = true; // mark handled either way, so we don't re-check every minute
+    if(stream === 'individual'){
+      const pending = data.students.filter(s => !s.updated).length;
+      if(pending === 0){ saveData(); return; }
+      addNotification('individual', 'Student progress due ' + whenLabel,
+        pending + ' student update' + (pending === 1 ? '' : 's') + ' still pending. Deadline: Friday 11:59 PM.');
+    } else {
+      const lastSent = weeklyLastSentMs();
+      if(lastSent && lastSent >= cycleStart.getTime()){ saveData(); return; }
+      addNotification('weekly', 'Weekly update due ' + whenLabel,
+        'The weekly update for ' + data.className + " hasn't been sent yet. Deadline: Friday 11:59 PM.");
+    }
+    saveData();
+  }
+
+  function checkReminders(){
+    if(!data.onboarded) return;
+    rolloverCheck();
+    const now = Date.now();
+    const deadline = fridayDeadline(new Date());
+    const cycleStart = cycleStartFor(deadline);
+    const OFFSETS = [
+      { key:'1d', ms:24*60*60*1000, label:'tomorrow' },
+      { key:'3h', ms:3*60*60*1000, label:'in a few hours' },
+      { key:'1h', ms:60*60*1000, label:'in 1 hour' }
+    ];
+    ['individual','weekly'].forEach(stream => {
+      if(!data.notifSettings[stream]) return;
+      const snoozeUntil = data.notifSnoozes[stream];
+      if(snoozeUntil){
+        if(now < snoozeUntil) return; // still snoozed, skip this stream entirely for now
+        const snoozeFireKey = data.notifWeekKey + '_' + stream + '_snoozed_' + snoozeUntil;
+        if(!data.notifFired[snoozeFireKey]) fireStreamReminder(stream, 'now', cycleStart, snoozeFireKey);
+        delete data.notifSnoozes[stream];
+        saveData();
+      }
+      OFFSETS.forEach(off => {
+        const triggerTime = deadline.getTime() - off.ms;
+        const fireKey = data.notifWeekKey + '_' + stream + '_' + off.key;
+        if(now >= triggerTime && now <= deadline.getTime() && !data.notifFired[fireKey]){
+          fireStreamReminder(stream, off.label, cycleStart, fireKey);
+        }
+      });
+    });
+  }
+
+  function applySnooze(stream){
+    if(stream !== 'individual' && stream !== 'weekly') return;
+    data.notifSnoozes[stream] = Date.now() + 60*60*1000; // snooze 1 hour
+    saveData();
+  }
+
+  function handleLaunchParams(){
+    const params = new URLSearchParams(window.location.search);
+    const snoozeType = params.get('snooze');
+    const openNotifs = params.get('openNotifications');
+    if(snoozeType) applySnooze(snoozeType);
+    if(openNotifs) setTimeout(() => { renderNotifList(); notifOverlay.classList.add('open'); }, 1800);
+    if(snoozeType || openNotifs){
+      const url = new URL(window.location.href);
+      url.search = '';
+      window.history.replaceState({}, '', url.toString());
+    }
+  }
+
+  function initNotifications(){
+    toggleIndividualReminders.checked = data.notifSettings.individual !== false;
+    toggleWeeklyReminders.checked = data.notifSettings.weekly !== false;
+    updateNotifStatusRow();
+    renderNotifBadge();
+    checkReminders();
+    if(!window.__ttReminderInterval) window.__ttReminderInterval = setInterval(checkReminders, 60*1000);
+    document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') checkReminders(); });
+    window.addEventListener('focus', checkReminders);
+  }
+
+  document.getElementById('settingsBtn').addEventListener('click', () => {
+    if(data.onboarded){
+      toggleIndividualReminders.checked = data.notifSettings.individual !== false;
+      toggleWeeklyReminders.checked = data.notifSettings.weekly !== false;
+      updateNotifStatusRow();
+    }
+  });
+
+  /* ================= MY ACTIVITY (profile, stats, calendar) ================= */
+  // Activity is logged from the moment this feature ships / a teacher is
+  // onboarded onward - there's no historical backfill for sends that
+  // happened before activityLog existed.
+  function localDateStr(d){
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function logActivity(type, label){
+    const now = new Date();
+    data.activityLog.push({ id:'a' + Date.now() + Math.random().toString(36).slice(2,6), ts: now.getTime(), date: localDateStr(now), type, label });
+    if(data.activityLog.length > 1500) data.activityLog.splice(0, data.activityLog.length - 1500);
+    saveData();
+  }
+
+  const activityOverlay = document.getElementById('activityOverlay');
+  let activityViewMonth = new Date().getMonth();
+  let activityViewYear = new Date().getFullYear();
+  let selectedDayStr = null;
+
+  document.getElementById('openActivityRow').addEventListener('click', () => { closeSettings(); openActivityView(); });
+  document.getElementById('closeActivityBtn').addEventListener('click', () => activityOverlay.classList.remove('open'));
+  activityOverlay.addEventListener('click', e => { if(e.target === activityOverlay) activityOverlay.classList.remove('open'); });
+
+  function openActivityView(){
+    const now = new Date();
+    activityViewMonth = now.getMonth();
+    activityViewYear = now.getFullYear();
+    selectedDayStr = null;
+    renderActivityStats();
+    renderCalendar();
+    renderDayDetail(null);
+    activityOverlay.classList.add('open');
+  }
+
+  function sameMonth(dateStr, y, m){
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.getFullYear() === y && d.getMonth() === m;
+  }
+
+  function computeWeeklyStreak(){
+    const now = new Date();
+    let deadline = fridayDeadline(now);
+    if(now.getTime() < deadline.getTime()){
+      deadline = new Date(deadline); deadline.setDate(deadline.getDate() - 7);
+    }
+    let streak = 0;
+    for(let i = 0; i < 104; i++){
+      const cycleStart = cycleStartFor(deadline);
+      const cycleEndMs = new Date(deadline).setHours(23,59,59,999);
+      const sentInCycle = data.activityLog.some(a => a.type === 'weekly' && a.ts >= cycleStart.getTime() && a.ts <= cycleEndMs);
+      if(!sentInCycle) break;
+      streak++;
+      deadline = new Date(deadline); deadline.setDate(deadline.getDate() - 7);
+    }
+    return streak;
+  }
+
+  function renderActivityStats(){
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth();
+    const monthIndividual = data.activityLog.filter(a => a.type === 'individual' && sameMonth(a.date, y, m)).length;
+    const monthWeekly = data.activityLog.filter(a => a.type === 'weekly' && sameMonth(a.date, y, m)).length;
+    document.getElementById('actStatMonthIndividual').textContent = monthIndividual;
+    document.getElementById('actStatMonthWeekly').textContent = monthWeekly;
+    document.getElementById('actStatStreak').textContent = computeWeeklyStreak();
+  }
+
+  function wasWeeklyMissedFor(fridayDate){
+    const cycleStart = cycleStartFor(fridayDate);
+    const cycleEndMs = new Date(fridayDate).setHours(23,59,59,999);
+    return !data.activityLog.some(a => a.type === 'weekly' && a.ts >= cycleStart.getTime() && a.ts <= cycleEndMs);
+  }
+
+  function renderCalendar(){
+    const label = new Date(activityViewYear, activityViewMonth, 1).toLocaleDateString('en-GB',{ month:'long', year:'numeric' });
+    document.getElementById('calMonthLabel').textContent = label;
+    const now = new Date();
+    const isCurrentMonth = (activityViewYear === now.getFullYear() && activityViewMonth === now.getMonth());
+    document.getElementById('calNextBtn').disabled = isCurrentMonth;
+
+    const todayStr = localDateStr(now);
+    const nextDeadlineStr = localDateStr(fridayDeadline(now));
+
+    const firstDay = new Date(activityViewYear, activityViewMonth, 1);
+    const startOffset = firstDay.getDay();
+    const daysInMonth = new Date(activityViewYear, activityViewMonth + 1, 0).getDate();
+
+    const cells = [];
+    for(let i = 0; i < startOffset; i++) cells.push(null);
+    for(let day = 1; day <= daysInMonth; day++) cells.push(new Date(activityViewYear, activityViewMonth, day));
+
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = cells.map(d => {
+      if(!d) return '<div class="cal-cell empty"></div>';
+      const dStr = localDateStr(d);
+      const isToday = dStr === todayStr;
+      const isSelected = dStr === selectedDayStr;
+      const isUpcoming = dStr === nextDeadlineStr;
+      const dayLogs = data.activityLog.filter(a => a.date === dStr);
+      const hasIndividual = dayLogs.some(a => a.type === 'individual');
+      const hasWeekly = dayLogs.some(a => a.type === 'weekly');
+      const isMissedFriday = d.getDay() === 5 && dStr < todayStr && !hasWeekly && wasWeeklyMissedFor(d);
+      const dots = [
+        hasIndividual ? '<span class="dot gold"></span>' : '',
+        hasWeekly ? '<span class="dot navy"></span>' : '',
+        isMissedFriday ? '<span class="dot danger"></span>' : ''
+      ].join('');
+      const classes = ['cal-cell', isToday && 'today', isSelected && 'selected', isUpcoming && 'upcoming'].filter(Boolean).join(' ');
+      return `<div class="${classes}" data-date="${dStr}"><span>${d.getDate()}</span><span class="dots">${dots}</span></div>`;
+    }).join('');
+
+    grid.querySelectorAll('.cal-cell[data-date]').forEach(cell => {
+      cell.addEventListener('click', () => {
+        selectedDayStr = cell.getAttribute('data-date');
+        renderCalendar();
+        renderDayDetail(selectedDayStr);
+      });
+    });
+  }
+
+  function renderDayDetail(dStr){
+    const card = document.getElementById('dayDetailCard');
+    if(!dStr){ card.innerHTML = '<p class="day-detail-hint">Tap a date to see what happened that day.</p>'; return; }
+    const d = new Date(dStr + 'T00:00:00');
+    const label = d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+    const dayLogs = data.activityLog.filter(a => a.date === dStr);
+    const individualLogs = dayLogs.filter(a => a.type === 'individual');
+    const weeklyLogs = dayLogs.filter(a => a.type === 'weekly');
+
+    let itemsHtml = '';
+    if(individualLogs.length){
+      itemsHtml += `<div class="day-detail-item"><i class="fa-solid fa-user-graduate"></i><span>Sent a progress update to ${individualLogs.length} parent${individualLogs.length > 1 ? 's' : ''}: ${individualLogs.map(a => escapeHtml(a.label)).join(', ')}</span></div>`;
+    }
+    if(weeklyLogs.length){
+      itemsHtml += `<div class="day-detail-item"><i class="fa-solid fa-calendar-week"></i><span>Sent the weekly update to the ${escapeHtml(weeklyLogs[0].label)} class group</span></div>`;
+    }
+    const todayStr = localDateStr(new Date());
+    if(!weeklyLogs.length && d.getDay() === 5 && dStr < todayStr && wasWeeklyMissedFor(d)){
+      itemsHtml += `<div class="day-detail-item miss"><i class="fa-solid fa-triangle-exclamation"></i><span>Weekly update was not sent for the week ending this day.</span></div>`;
+    }
+    if(!itemsHtml) itemsHtml = '<p class="day-detail-hint">No activity on this day.</p>';
+    card.innerHTML = `<p class="day-detail-date">${label}</p>${itemsHtml}`;
+  }
+
+  document.getElementById('calPrevBtn').addEventListener('click', () => {
+    activityViewMonth--; if(activityViewMonth < 0){ activityViewMonth = 11; activityViewYear--; }
+    renderCalendar();
+  });
+  document.getElementById('calNextBtn').addEventListener('click', () => {
+    const now = new Date();
+    if(activityViewYear === now.getFullYear() && activityViewMonth === now.getMonth()) return;
+    activityViewMonth++; if(activityViewMonth > 11){ activityViewMonth = 0; activityViewYear++; }
+    renderCalendar();
+  });
+
+  /* ---------- service worker ---------- */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      const msg = event.data || {};
+      if(msg.type === 'tt-snooze'){ applySnooze(msg.reminderType); }
+      else if(msg.type === 'tt-open-notifications' && data.onboarded){ renderNotifList(); notifOverlay.classList.add('open'); }
+    });
+  }
+
+  handleLaunchParams();
+  boot();
+})();
+</script>
+</body>
+</html>
