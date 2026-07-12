@@ -1,5 +1,5 @@
-const CACHE_NAME = 'tt-connect-v2';
-const CORE_ASSETS = ['./', './index.html', './manifest.json', './logo.png'];
+const CACHE_NAME = 'tt-connect-v5';
+const CORE_ASSETS = ['./', './index.html', './manifest.json', './logo.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -50,10 +50,10 @@ self.addEventListener('message', (event) => {
   if (msg.type === 'tt-show-notification') {
     const { title, body, tag, reminderType } = msg;
     event.waitUntil(
-      self.registration.showNotification(title || 'Tobby Tabi', {
+      self.registration.showNotification(title || 'Goddy Tabi', {
         body: body || '',
         tag: tag || 'tt-reminder',
-        icon: './logo.png',
+        icon: './icon-192.png',
         badge: './logo.png',
         vibrate: [120, 60, 120],
         renotify: true,
@@ -103,12 +103,12 @@ self.addEventListener('notificationclick', (event) => {
 self.addEventListener('push', (event) => {
   let payload = {};
   try { payload = event.data ? event.data.json() : {}; } catch (e) {}
-  const title = payload.title || 'Tobby Tabi';
+  const title = payload.title || 'Goddy Tabi';
   const body = payload.body || '';
   event.waitUntil(
     self.registration.showNotification(title, {
       body,
-      icon: './logo.png',
+      icon: './icon-192.png',
       badge: './logo.png',
       data: { reminderType: payload.reminderType || '' }
     })

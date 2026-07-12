@@ -1,6 +1,6 @@
-# Tobby Tabi
+# Goddy Tabi
 
-A mobile-first Progressive Web App (PWA) built for teachers at **Tobby Tabby Bilingual Nursery and Primary School** to send parent updates over WhatsApp — without any backend or server.
+A mobile-first Progressive Web App (PWA) built for teachers at **Goddy Tabi Bilingual Nursery and Primary School** to send parent updates over WhatsApp — without any backend or server.
 
 ## What it does
 
@@ -22,13 +22,14 @@ Plain HTML, CSS, and vanilla JavaScript — no build step, no framework, no serv
 | `index.html` | The entire app — markup, styles, and logic |
 | `sw.js` | Service worker: offline caching + notification handling |
 | `manifest.json` | PWA manifest (icons, name, display mode) |
-| `logo.png` | App/school logo, used across splash screen, top bar, and install prompt |
+| `logo.png` | Transparent logo used inside the app itself (top bar, custom splash screen, install prompt) |
+| `icon-192.png` / `icon-512.png` | Flattened, padded versions of the logo (opaque, white-backed) used only for the home-screen icon and Android's native pre-splash — needed because Android renders bare transparent icons poorly |
 
 ## Hosting (GitHub Pages)
 
 1. Repo **Settings** → **Pages** → Source: **Deploy from a branch** → Branch: `main`, folder `/ (root)` → **Save**.
 2. Your app will be live at `https://<username>.github.io/<repo-name>/`.
-3. Open the link on a phone and **Add to Home Screen** for the full app-like experience.
+3. Open the link on a phone and **Add to Home Screen** for the full app-like experience. If updating an already-installed app, uninstall and re-add it — Android caches the icon/splash setup at install time.
 
 ## Notes
 

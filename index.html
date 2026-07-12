@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
-<title>Tobby Tabi</title>
+<title>Goddy Tabi</title>
 <meta name="theme-color" content="#0b1c3d">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Tobby Tabi">
+<meta name="apple-mobile-web-app-title" content="Goddy Tabi">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="logo.png">
+<link rel="apple-touch-icon" href="icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -524,7 +524,7 @@ footer.app-footer strong{color:var(--navy-deep);}
 <!-- ===================== SPLASH ===================== -->
 <div id="splashScreen">
   <div class="splash-ring"><img class="splash-logo" id="splashLogo" alt="School Logo" onerror="this.onerror=null;this.style.display='none';this.insertAdjacentHTML('afterend','&lt;i class=&quot;fa-solid fa-graduation-cap&quot; style=&quot;font-size:38px;color:var(--gold);z-index:2;&quot;&gt;&lt;/i&gt;');"></div>
-  <h1 class="splash-title">Tobby Tabi</h1>
+  <h1 class="splash-title">Goddy Tabi</h1>
   <p class="splash-sub">Teacher · Parent Bridge</p>
   <div class="splash-foot">Loading your workspace…</div>
 </div>
@@ -591,7 +591,7 @@ footer.app-footer strong{color:var(--navy-deep);}
     <header class="top-bar">
       <img class="top-logo" id="topLogo" alt="School Logo">
       <div class="top-bar-text">
-        <p class="brand">Tobby Tabi</p>
+        <p class="brand">Goddy Tabi</p>
         <p class="meta" id="topBarMeta">Class · Teacher</p>
       </div>
       <button class="icon-btn" id="notifBellBtn" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="notif-badge hidden" id="notifBadge">0</span></button>
@@ -641,8 +641,8 @@ footer.app-footer strong{color:var(--navy-deep);}
     </div>
 
     <footer class="app-footer">
-      <strong id="footerSchoolName">Tobby Tabby Bilingual Nursery and Primary School</strong><br>
-      Tobby Tabi · Teacher · Parent Bridge
+      <strong id="footerSchoolName">Goddy Tabi Bilingual Nursery & Primary School</strong><br>
+      Goddy Tabi · Teacher · Parent Bridge
     </footer>
   </div>
 
@@ -863,9 +863,9 @@ footer.app-footer strong{color:var(--navy-deep);}
 <!-- ===================== INSTALL MODAL ===================== -->
 <div class="install-overlay" id="installOverlay">
   <div class="install-card">
-    <div class="install-icon-wrap"><img id="installLogo" alt="Tobby Tabi" style="width:100%;height:100%;object-fit:cover;"></div>
-    <h3>Install Tobby Tabi</h3>
-    <p>Add Tobby Tabi to your home screen for one-tap access — it opens instantly, just like a regular app.</p>
+    <div class="install-icon-wrap"><img id="installLogo" alt="Goddy Tabi" style="width:100%;height:100%;object-fit:cover;"></div>
+    <h3>Install Goddy Tabi</h3>
+    <p>Add Goddy Tabi to your home screen for one-tap access — it opens instantly, just like a regular app.</p>
     <div class="install-steps" id="installSteps"></div>
     <button class="install-btn-primary" id="installNowBtn"><i class="fa-solid fa-arrow-down-to-bracket"></i> Install Now</button>
     <button class="install-btn-secondary" id="installLaterBtn">Maybe Later</button>
@@ -879,7 +879,7 @@ footer.app-footer strong{color:var(--navy-deep);}
       <i class="fa-solid fa-bell" style="font-size:30px;color:var(--gold);"></i>
     </div>
     <h3>Never miss a deadline</h3>
-    <p>Turn on notifications and Tobby Tabi will remind you a day before, a few hours before, and again one hour before the Friday 11:59 PM deadline for student progress and the weekly class update.</p>
+    <p>Turn on notifications and Goddy Tabi will remind you a day before, a few hours before, and again one hour before the Friday 11:59 PM deadline for student progress and the weekly class update.</p>
     <button class="install-btn-primary" id="notifEnableBtn"><i class="fa-solid fa-bell"></i> Enable Notifications</button>
     <button class="install-btn-secondary" id="notifLaterBtn">Maybe Later</button>
   </div>
@@ -935,7 +935,7 @@ footer.app-footer strong{color:var(--navy-deep);}
 <script>
 (function(){
   const LOGO_URL = 'logo.png';
-  const SCHOOL_NAME = 'Tobby Tabby Bilingual Nursery and Primary School';
+  const SCHOOL_NAME = 'Goddy Tabi Bilingual Nursery & Primary School';
   const LOGO_CACHE_KEY = 'tobbyTabiLogoB64';
   const DATA_KEY = 'tobbyTabiData';
   const INSTALL_DISMISS_KEY = 'tobbyTabiInstallDismissedAt';
@@ -1826,8 +1826,8 @@ footer.app-footer strong{color:var(--navy-deep);}
     if(Notification.permission === 'default'){ closeSettings(); notifPermOverlay.classList.add('open'); }
     else{
       await showAlert(Notification.permission === 'granted'
-        ? 'Notifications are already enabled for Tobby Tabi.'
-        : 'Notifications are blocked. Enable them from your phone or browser settings, then reopen Tobby Tabi.', 'Notifications');
+        ? 'Notifications are already enabled for Goddy Tabi.'
+        : 'Notifications are blocked. Enable them from your phone or browser settings, then reopen Goddy Tabi.', 'Notifications');
     }
   });
 
