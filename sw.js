@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tt-connect-v5';
+const CACHE_NAME = 'tt-connect-v6';
 const CORE_ASSETS = ['./', './index.html', './manifest.json', './logo.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (event) => {

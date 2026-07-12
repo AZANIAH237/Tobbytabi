@@ -168,12 +168,23 @@ button{font-family:inherit;}
 .install-overlay{
   position:fixed;inset:0;z-index:400;background:rgba(8,21,48,0.62);backdrop-filter:blur(2px);
   display:none;align-items:center;justify-content:center;padding:24px;
+  transition:background .25s ease, backdrop-filter .25s ease;
 }
 .install-overlay.open{display:flex;}
+.install-overlay.installing{background:rgba(8,21,48,0.8);backdrop-filter:blur(10px);}
 .install-card{
-  background:var(--white);border-radius:22px;max-width:360px;width:100%;
+  position:relative;background:var(--white);border-radius:22px;max-width:360px;width:100%;
   padding:28px 24px 24px;text-align:center;box-shadow:var(--shadow-lg);
   animation:popIn .3s ease;
+}
+.install-x-btn{
+  position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;
+  background:var(--navy-soft);color:var(--navy-mid);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:13px;
+}
+.install-spinner{
+  width:56px;height:56px;border-radius:50%;margin:0 auto 18px;
+  border:4px solid var(--navy-soft);border-top-color:var(--gold);animation:spin .9s linear infinite;
 }
 .install-icon-wrap{
   width:76px;height:76px;border-radius:22px;margin:0 auto 18px;overflow:hidden;
@@ -191,6 +202,7 @@ button{font-family:inherit;}
   padding:14px;border-radius:12px;font-weight:800;font-size:14.5px;cursor:pointer;margin-bottom:10px;
   display:flex;align-items:center;justify-content:center;gap:8px;
 }
+.install-link-sub{font-size:10.5px;font-weight:600;opacity:0.75;word-break:break-all;}
 .install-btn-secondary{
   width:100%;background:transparent;color:var(--text-soft);border:none;
   padding:8px;font-weight:600;font-size:13px;cursor:pointer;
@@ -764,7 +776,7 @@ footer.app-footer strong{color:var(--navy-deep);}
         <i class="fa-solid fa-chevron-right" style="color:var(--text-soft);"></i>
       </div>
       <div class="settings-row" id="installRow" style="cursor:pointer;">
-        <div class="settings-row-left"><i class="fa-solid fa-arrow-down-to-bracket"></i><span class="lbl">Install App</span></div>
+        <div class="settings-row-left"><i class="fa-solid fa-arrow-down-to-bracket"></i><span class="lbl">Install App<span class="row-sub" id="installStatusSub">Checking…</span></span></div>
         <i class="fa-solid fa-chevron-right" style="color:var(--text-soft);"></i>
       </div>
 
@@ -874,12 +886,18 @@ footer.app-footer strong{color:var(--navy-deep);}
 <!-- ===================== INSTALL MODAL ===================== -->
 <div class="install-overlay" id="installOverlay">
   <div class="install-card">
-    <div class="install-icon-wrap"><img id="installLogo" alt="Goddy Tabi" style="width:100%;height:100%;object-fit:cover;"></div>
-    <h3>Install Goddy Tabi</h3>
-    <p>Add Goddy Tabi to your home screen for one-tap access — it opens instantly, just like a regular app.</p>
+    <button class="install-x-btn" id="installXBtn" aria-label="Close" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
+    <div class="install-icon-wrap" id="installIconWrap"><img id="installLogo" alt="Goddy Tabi" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div class="install-spinner" id="installSpinner" style="display:none;"></div>
+    <h3 id="installTitle">Install Goddy Tabi</h3>
+    <p id="installDesc">Add Goddy Tabi to your home screen for one-tap access — it opens instantly, just like a regular app.</p>
     <div class="install-steps" id="installSteps"></div>
     <button class="install-btn-primary" id="installNowBtn"><i class="fa-solid fa-arrow-down-to-bracket"></i> Install Now</button>
     <button class="install-btn-secondary" id="installLaterBtn">Maybe Later</button>
+    <a class="install-btn-primary" id="installOpenBtn" href="#" style="display:none;flex-direction:column;gap:2px;text-decoration:none;">
+      <span><i class="fa-solid fa-arrow-up-right-from-square"></i> Open Goddy Tabi</span>
+      <span class="install-link-sub" id="installOpenBtnUrl"></span>
+    </a>
   </div>
 </div>
 
@@ -975,7 +993,104 @@ footer.app-footer strong{color:var(--navy-deep);}
     return { onboarded:false, teacherName:'', className:'', subjects:[], students:[], announcements: ANNOUNCEMENTS.slice(),
       notifSettings:{ individual:true, weekly:true }, notifications:[], notifFired:{}, notifSnoozes:{}, notifWeekKey:null, activityLog:[] };
   }
-  function saveData(){ localStorage.setItem(DATA_KEY, JSON.stringify(data)); }
+  function saveData(){
+    try{
+      localStorage.setItem(DATA_KEY, JSON.stringify(data));
+    }catch(e){
+      console.error('Save failed', e);
+      showToast('Storage is full — a recent change may not be saved.', 'fa-solid fa-triangle-exclamation');
+    }
+  }
+
+  /* ---------- student photos (IndexedDB) ---------- */
+  // Photos are never stored in localStorage/`data` - only a small `hasPhoto`
+  // flag lives there. The actual image bytes live in IndexedDB, which has a
+  // vastly larger quota than localStorage (localStorage is typically capped
+  // around 5MB total; a class of 60+ students with camera photos would blow
+  // past that in a couple of students' worth of raw photos). Photos are also
+  // resized/compressed client-side before saving, so even IndexedDB storage
+  // stays small.
+  const PHOTO_DB_NAME = 'goddyTabiPhotos';
+  const PHOTO_STORE = 'photos';
+  let photoDbPromise = null;
+  function openPhotoDb(){
+    if(photoDbPromise) return photoDbPromise;
+    photoDbPromise = new Promise((resolve, reject) => {
+      if(!('indexedDB' in window)){ reject(new Error('IndexedDB not supported')); return; }
+      const req = indexedDB.open(PHOTO_DB_NAME, 1);
+      req.onupgradeneeded = () => { req.result.createObjectStore(PHOTO_STORE); };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    return photoDbPromise;
+  }
+  async function savePhotoBlob(studentId, blob){
+    const db = await openPhotoDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(PHOTO_STORE, 'readwrite');
+      tx.objectStore(PHOTO_STORE).put(blob, studentId);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+  async function getPhotoBlob(studentId){
+    const db = await openPhotoDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(PHOTO_STORE, 'readonly');
+      const req = tx.objectStore(PHOTO_STORE).get(studentId);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  }
+  async function deletePhotoBlob(studentId){
+    const db = await openPhotoDb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(PHOTO_STORE, 'readwrite');
+      tx.objectStore(PHOTO_STORE).delete(studentId);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  // Resizes+re-encodes a chosen/captured photo down to a small JPEG blob
+  // (long edge <= maxDim, given quality) before it ever touches storage.
+  function compressImage(file, maxDim, quality){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          let { width, height } = img;
+          if(width > height){ if(width > maxDim){ height = Math.round(height * maxDim / width); width = maxDim; } }
+          else{ if(height > maxDim){ width = Math.round(width * maxDim / height); height = maxDim; } }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          canvas.toBlob(blob => { blob ? resolve(blob) : reject(new Error('Compression failed')); }, 'image/jpeg', quality);
+        };
+        img.onerror = () => reject(new Error('Invalid image'));
+        img.src = reader.result;
+      };
+      reader.onerror = () => reject(new Error('File read failed'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // One-time cleanup for any students saved before this change, when full
+  // base64 photos were still stored inline in `data`.
+  async function migrateLegacyPhotos(){
+    const legacy = data.students.filter(s => s.photo && typeof s.photo === 'string' && s.photo.startsWith('data:'));
+    if(!legacy.length) return;
+    for(const s of legacy){
+      try{
+        const blob = await (await fetch(s.photo)).blob();
+        await savePhotoBlob(s.id, blob);
+        s.hasPhoto = true;
+      }catch(e){ /* skip this one, keep going */ }
+      delete s.photo;
+    }
+    saveData();
+  }
   let data = loadData();
 
   function escapeHtml(str){
@@ -1091,13 +1206,15 @@ footer.app-footer strong{color:var(--navy-deep);}
 
   function boot(){
     cacheLogo();
-    setTimeout(() => {
+    setTimeout(async () => {
       splashScreen.style.display = 'none';
       if(data.onboarded){
+        await migrateLegacyPhotos();
         renderMainMeta();
         showOnly(mainApp);
         renderDashboard(); renderStudents(); initWeeklyView();
         initNotifications();
+        updateInstallStatusRow();
         maybeShowInstallModal(1200);
         setTimeout(maybeShowNotifPermModal, 2400);
       } else {
@@ -1183,6 +1300,7 @@ footer.app-footer strong{color:var(--navy-deep);}
     showOnly(mainApp);
     renderDashboard(); renderStudents(); initWeeklyView();
     initNotifications();
+    updateInstallStatusRow();
     maybeShowInstallModal(500);
     setTimeout(maybeShowNotifPermModal, 1500);
   });
@@ -1201,14 +1319,21 @@ footer.app-footer strong{color:var(--navy-deep);}
 
   /* ---------- install modal (PWA) ---------- */
   let deferredPrompt = null;
+  let installFallbackTimer = null;
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
+    updateInstallStatusRow();
   });
   window.addEventListener('appinstalled', () => {
     localStorage.setItem(INSTALL_DISMISS_KEY, 'installed');
-    closeInstallModal();
-    showToast('Installed! Find Goddy Tabi on your home screen.', 'fa-solid fa-circle-check');
+    clearTimeout(installFallbackTimer);
+    if(installOverlay.classList.contains('open')){
+      setInstallState('success');
+    } else {
+      showToast('Installed! Find Goddy Tabi on your home screen.', 'fa-solid fa-circle-check');
+    }
+    updateInstallStatusRow();
   });
 
   function isIos(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
@@ -1219,8 +1344,48 @@ footer.app-footer strong{color:var(--navy-deep);}
   const installOverlay = document.getElementById('installOverlay');
   const installSteps = document.getElementById('installSteps');
   const installNowBtn = document.getElementById('installNowBtn');
+  const installLaterBtn = document.getElementById('installLaterBtn');
+  const installXBtn = document.getElementById('installXBtn');
+  const installIconWrap = document.getElementById('installIconWrap');
+  const installSpinner = document.getElementById('installSpinner');
+  const installTitle = document.getElementById('installTitle');
+  const installDesc = document.getElementById('installDesc');
+  const installOpenBtn = document.getElementById('installOpenBtn');
+  const installOpenBtnUrl = document.getElementById('installOpenBtnUrl');
+  const installStatusSub = document.getElementById('installStatusSub');
+
+  // state: 'prompt' (default ask), 'installing' (blurred, blocked, spinner),
+  // 'success' (checkmark + Open App button)
+  function setInstallState(state){
+    installOverlay.classList.toggle('installing', state === 'installing');
+    installIconWrap.style.display = state === 'installing' ? 'none' : 'flex';
+    installSpinner.style.display = state === 'installing' ? 'block' : 'none';
+    installXBtn.style.display = state === 'installing' ? 'flex' : 'none';
+    installNowBtn.style.display = state === 'prompt' ? 'flex' : 'none';
+    installLaterBtn.style.display = state === 'prompt' ? 'block' : 'none';
+    installOpenBtn.style.display = state === 'success' ? 'flex' : 'none';
+    if(state === 'installing'){
+      installTitle.textContent = 'Installing Goddy Tabi…';
+      installDesc.textContent = 'Hang tight, this only takes a moment. You can tap the X to dismiss this — it won\'t stop the install.';
+    } else if(state === 'success'){
+      installTitle.textContent = 'Installed!';
+      installDesc.textContent = 'Goddy Tabi is on your home screen now.';
+      const url = window.location.href;
+      installOpenBtn.href = url;
+      installOpenBtnUrl.textContent = window.location.hostname + window.location.pathname;
+    } else {
+      installTitle.textContent = 'Install Goddy Tabi';
+      installDesc.textContent = 'Add Goddy Tabi to your home screen for one-tap access — it opens instantly, just like a regular app.';
+    }
+  }
 
   function openInstallModal(){
+    if(isStandalone() || localStorage.getItem(INSTALL_DISMISS_KEY) === 'installed'){
+      setInstallState('success');
+      installOverlay.classList.add('open');
+      return;
+    }
+    setInstallState('prompt');
     if(isIos() && !deferredPrompt){
       installSteps.classList.add('show');
       installSteps.innerHTML = `
@@ -1230,7 +1395,6 @@ footer.app-footer strong{color:var(--navy-deep);}
       installNowBtn.style.display = 'none';
     } else {
       installSteps.classList.remove('show');
-      installNowBtn.style.display = 'flex';
     }
     installOverlay.classList.add('open');
   }
@@ -1247,16 +1411,43 @@ footer.app-footer strong{color:var(--navy-deep);}
     setTimeout(openInstallModal, delay);
   }
 
+  function updateInstallStatusRow(){
+    if(!installStatusSub) return;
+    if(isStandalone() || localStorage.getItem(INSTALL_DISMISS_KEY) === 'installed'){
+      installStatusSub.textContent = 'Installed';
+    } else if(isIos() && !deferredPrompt){
+      installStatusSub.textContent = 'Not installed — tap for steps';
+    } else {
+      installStatusSub.textContent = 'Not installed — tap to install';
+    }
+  }
+
   installNowBtn.addEventListener('click', async () => {
     if(deferredPrompt){
+      setInstallState('installing');
       deferredPrompt.prompt();
       const choice = await deferredPrompt.userChoice;
       deferredPrompt = null;
-      if(choice.outcome === 'accepted'){ localStorage.setItem(INSTALL_DISMISS_KEY, 'installed'); }
-      closeInstallModal();
+      if(choice.outcome !== 'accepted'){
+        setInstallState('prompt');
+        return;
+      }
+      // Accepted: stay in the "installing" state until the appinstalled
+      // event confirms it (handled above). Fallback in case that event
+      // never fires on this device/browser combo.
+      clearTimeout(installFallbackTimer);
+      installFallbackTimer = setTimeout(() => {
+        if(installOverlay.classList.contains('installing')) setInstallState('success');
+      }, 6000);
     } else {
       openInstallModal();
     }
+  });
+  installXBtn.addEventListener('click', closeInstallModal);
+  installOpenBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeInstallModal();
+    window.open(window.location.href, '_blank');
   });
   document.getElementById('installLaterBtn').addEventListener('click', () => {
     localStorage.setItem(INSTALL_DISMISS_KEY, String(Date.now()));
@@ -1336,10 +1527,12 @@ footer.app-footer strong{color:var(--navy-deep);}
   const cameraInput = document.getElementById('cameraInput');
   const galleryInput = document.getElementById('galleryInput');
   let pendingPhoto = null;
+  let pendingPhotoUrl = null;
 
   document.getElementById('fabAddStudent').addEventListener('click', () => {
     addStudentForm.reset();
     pendingPhoto = null;
+    if(pendingPhotoUrl){ URL.revokeObjectURL(pendingPhotoUrl); pendingPhotoUrl = null; }
     newStudentPhotoPreview.innerHTML = '<i class="fa-solid fa-camera"></i>';
     addStudentOverlay.classList.add('open');
   });
@@ -1349,19 +1542,22 @@ footer.app-footer strong{color:var(--navy-deep);}
   document.getElementById('takePhotoBtn').addEventListener('click', () => cameraInput.click());
   document.getElementById('choosePhotoBtn').addEventListener('click', () => galleryInput.click());
 
-  function handlePhotoFile(file){
+  async function handlePhotoFile(file){
     if(!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      pendingPhoto = reader.result;
-      newStudentPhotoPreview.innerHTML = `<img src="${pendingPhoto}" alt="Photo">`;
-    };
-    reader.readAsDataURL(file);
+    try{
+      const blob = await compressImage(file, 320, 0.72);
+      pendingPhoto = blob;
+      if(pendingPhotoUrl) URL.revokeObjectURL(pendingPhotoUrl);
+      pendingPhotoUrl = URL.createObjectURL(blob);
+      newStudentPhotoPreview.innerHTML = `<img src="${pendingPhotoUrl}" alt="Photo">`;
+    }catch(e){
+      await showAlert("Couldn't process that photo. Please try another one.", 'Photo error');
+    }
   }
   cameraInput.addEventListener('change', e => handlePhotoFile(e.target.files[0]));
   galleryInput.addEventListener('change', e => handlePhotoFile(e.target.files[0]));
 
-  addStudentForm.addEventListener('submit', e => {
+  addStudentForm.addEventListener('submit', async e => {
     e.preventDefault();
     const name = document.getElementById('newStudentName').value.trim();
     const phoneRaw = document.getElementById('newStudentPhone').value.trim().replace(/[^\d]/g,'');
@@ -1370,12 +1566,16 @@ footer.app-footer strong{color:var(--navy-deep);}
       id: 's' + Date.now(),
       name: name,
       phone: '+237' + phoneRaw,
-      photo: pendingPhoto,
+      hasPhoto: !!pendingPhoto,
       updated: false,
       lastUpdate: null
     };
     data.students.push(student);
     saveData();
+    if(pendingPhoto){
+      try{ await savePhotoBlob(student.id, pendingPhoto); }
+      catch(e){ console.error('Photo save failed', e); }
+    }
     addStudentOverlay.classList.remove('open');
     renderDashboard(); renderStudents();
   });
@@ -1394,6 +1594,8 @@ footer.app-footer strong{color:var(--navy-deep);}
     statPending.textContent = total - done;
   }
 
+  const photoUrlCache = new Map(); // studentId -> object URL, cached for the session so repeat renders don't re-hit IndexedDB
+
   function renderStudents(){
     if(!data.students.length){
       studentListEl.innerHTML = `
@@ -1406,7 +1608,7 @@ footer.app-footer strong{color:var(--navy-deep);}
     }
     studentListEl.innerHTML = data.students.map(s => `
       <div class="student-card ${s.updated ? 'done' : ''}">
-        ${s.photo ? `<img class="student-avatar" src="${s.photo}" alt="${escapeHtml(s.name)}">` : `<div class="student-avatar">${escapeHtml(initials(s.name))}</div>`}
+        <div class="student-avatar" data-avatar-id="${s.id}">${escapeHtml(initials(s.name))}</div>
         <div class="student-info">
           <h3>${escapeHtml(s.name)}</h3>
           <div class="meta"><i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> ${escapeHtml(s.phone)}</div>
@@ -1428,9 +1630,29 @@ footer.app-footer strong{color:var(--navy-deep);}
       if(ok){
         data.students = data.students.filter(s => s.id !== id);
         saveData();
+        if(photoUrlCache.has(id)){ URL.revokeObjectURL(photoUrlCache.get(id)); photoUrlCache.delete(id); }
+        deletePhotoBlob(id).catch(() => {});
         renderDashboard(); renderStudents(); initWeeklyView();
       }
     }));
+
+    data.students.forEach(s => { if(s.hasPhoto) loadStudentAvatar(s.id); });
+  }
+
+  async function loadStudentAvatar(id){
+    let url = photoUrlCache.get(id);
+    if(!url){
+      try{
+        const blob = await getPhotoBlob(id);
+        if(!blob) return;
+        url = URL.createObjectURL(blob);
+        photoUrlCache.set(id, url);
+      }catch(e){ return; }
+    }
+    const el = studentListEl.querySelector(`[data-avatar-id="${id}"]`);
+    if(el && el.tagName !== 'IMG'){
+      el.outerHTML = `<img class="student-avatar" data-avatar-id="${id}" src="${url}" alt="">`;
+    }
   }
 
   /* ---------- tabs ---------- */
@@ -1988,6 +2210,7 @@ footer.app-footer strong{color:var(--navy-deep);}
       toggleIndividualReminders.checked = data.notifSettings.individual !== false;
       toggleWeeklyReminders.checked = data.notifSettings.weekly !== false;
       updateNotifStatusRow();
+      updateInstallStatusRow();
     }
   });
 
